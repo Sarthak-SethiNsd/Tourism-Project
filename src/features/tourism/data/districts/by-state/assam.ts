@@ -1,0 +1,41 @@
+import { createDistrictList } from "@/features/tourism/data/districts/create-district-list";
+
+const districts = createDistrictList("assam", [
+  "Bajali",
+  "Baksa",
+  "Barpeta",
+  "Biswanath",
+  "Bongaigaon",
+  "Cachar",
+  "Charaideo",
+  "Chirang",
+  "Darrang",
+  "Dhemaji",
+  "Dhubri",
+  "Dibrugarh",
+  "Dima Hasao",
+  "Goalpara",
+  "Golaghat",
+  "Hailakandi",
+  "Hojai",
+  "Jorhat",
+  "Kamrup",
+  "Kamrup Metropolitan",
+  "Karbi Anglong",
+  "Karimganj",
+  "Kokrajhar",
+  "Lakhimpur",
+  "Majuli",
+  "Morigaon",
+  "Nagaon",
+  "Nalbari",
+  "Sivasagar",
+  "Sonitpur",
+  "South Salmara-Mankachar",
+  "Tamulpur",
+  "Tinsukia",
+  "Udalguri",
+  "West Karbi Anglong"
+]);
+
+export default districts;

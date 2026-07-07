@@ -1,0 +1,18 @@
+import { createDistrictList } from "@/features/tourism/data/districts/create-district-list";
+
+const districts = createDistrictList("meghalaya", [
+  "East Garo Hills",
+  "East Jaintia Hills",
+  "East Khasi Hills",
+  "Eastern West Khasi Hills",
+  "North Garo Hills",
+  "Ri Bhoi",
+  "South Garo Hills",
+  "South West Garo Hills",
+  "South West Khasi Hills",
+  "West Garo Hills",
+  "West Jaintia Hills",
+  "West Khasi Hills"
+]);
+
+export default districts;

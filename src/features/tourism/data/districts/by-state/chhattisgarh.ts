@@ -1,0 +1,38 @@
+import { createDistrictList } from "@/features/tourism/data/districts/create-district-list";
+
+const districts = createDistrictList("chhattisgarh", [
+  "Balod",
+  "Baloda Bazar",
+  "Balrampur",
+  "Bastar",
+  "Bemetara",
+  "Bijapur",
+  "Bilaspur",
+  "Dantewada",
+  "Dhamtari",
+  "Durg",
+  "Gariaband",
+  "Gaurela-Pendra-Marwahi",
+  "Janjgir-Champa",
+  "Jashpur",
+  "Kabirdham",
+  "Kanker",
+  "Kondagaon",
+  "Korba",
+  "Koriya",
+  "Mahasamund",
+  "Manendragarh-Chirmiri-Bharatpur",
+  "Mohla Manpur Ambagarh Chowki",
+  "Mungeli",
+  "Narayanpur",
+  "Raigarh",
+  "Raipur",
+  "Rajnandgaon",
+  "Sakti",
+  "Sarangarh-Bilaigarh",
+  "Sukma",
+  "Surajpur",
+  "Surguja",
+]);
+
+export default districts;
