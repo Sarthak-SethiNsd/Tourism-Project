@@ -137,7 +137,8 @@ export type NearbyPlaceCategory =
   | "ATMs"
   | "shopping malls"
   | "public toilets"
-  | "police stations";
+  | "police stations"
+  | "tourist attractions";
 
 export type NearbyPlace = {
   id: string;

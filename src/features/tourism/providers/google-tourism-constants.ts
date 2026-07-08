@@ -131,4 +131,5 @@ export const googleTypeByNearbyCategory: Record<NearbyPlaceCategory, string> = {
   "shopping malls": "shopping_mall",
   "public toilets": "public_bathroom",
   "police stations": "police",
+  "tourist attractions": "tourist_attraction",
 };

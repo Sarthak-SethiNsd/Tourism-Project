@@ -11,6 +11,7 @@ import type {
   TravelMode,
   TimeZoneResult,
   TourismGeoPoint,
+  TourismPlacePhoto,
   TourismProvider,
   TourismRouteRequest,
   TourismRouteSummary,
@@ -81,6 +82,10 @@ export class TourismService {
     signal?: AbortSignal,
   ): Promise<NearbyPlace[]> {
     return this.provider.getNearbyPlaces?.(latitude, longitude, radius, category, signal) ?? Promise.resolve([]);
+  }
+
+  listExternalPlacePhotos(placeId: string, signal?: AbortSignal): Promise<TourismPlacePhoto[]> {
+    return this.provider.listExternalPlacePhotos(placeId, signal);
   }
 
   getAutocompleteSuggestions(query: string, options?: AutocompleteOptions): Promise<AutocompleteSuggestion[]> {
@@ -221,6 +226,13 @@ export async function getNearbyTourismPlaces(
   signal?: AbortSignal,
 ): Promise<NearbyPlace[]> {
   return tourismService.getNearbyPlaces(latitude, longitude, radius, category, signal);
+}
+
+export async function listExternalTourismPlacePhotos(
+  placeId: string,
+  signal?: AbortSignal,
+): Promise<TourismPlacePhoto[]> {
+  return tourismService.listExternalPlacePhotos(placeId, signal);
 }
 
 export async function getAutocompleteSuggestions(
