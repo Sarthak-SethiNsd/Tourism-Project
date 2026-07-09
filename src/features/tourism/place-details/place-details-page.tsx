@@ -26,6 +26,7 @@ import {
   getTourismTravelInfo,
   listExternalTourismPlacePhotos,
 } from "@/features/tourism/services/tourism-service";
+import { SavePlaceButton } from "@/features/tourism/place-details/save-place-button";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
 type PlaceDetailsPageProps = {
@@ -118,6 +119,8 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
                   {priceLabelByLevel[place.priceLevel]}
                 </Badge>
               </div>
+
+              <SavePlaceButton place={place} />
 
               <div className="grid gap-3 text-sm text-muted-foreground">
                 <InfoLine icon={MapPin} value={address} />

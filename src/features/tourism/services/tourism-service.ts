@@ -1,4 +1,11 @@
 import { activeTourismProvider } from "@/features/tourism/providers/active-tourism-provider";
+import type { SavedPlace } from "@/features/saved-places/types";
+import {
+  isUserPlaceSaved,
+  listSavedPlaces,
+  saveUserPlace,
+  unsaveUserPlace,
+} from "@/features/saved-places/services/saved-places-service";
 import type {
   AutocompleteOptions,
   AutocompleteSuggestion,
@@ -41,6 +48,22 @@ export class TourismService {
 
   getPlaceById(placeId: string): Promise<TourismPlace | null> {
     return this.provider.getPlaceById(placeId);
+  }
+
+  savePlace(userId: string, place: TourismPlace): Promise<void> {
+    return saveUserPlace(userId, this.mapPlaceToSavedPlaceInput(place));
+  }
+
+  unsavePlace(userId: string, placeId: string): Promise<void> {
+    return unsaveUserPlace(userId, placeId);
+  }
+
+  isPlaceSaved(userId: string, placeId: string): Promise<boolean> {
+    return isUserPlaceSaved(userId, placeId);
+  }
+
+  getSavedPlaces(userId: string): Promise<SavedPlace[]> {
+    return listSavedPlaces(userId);
   }
 
   getPlaceDetailsBatch(placeIds: string[]): Promise<(TourismPlace | null | undefined)[]> {
@@ -163,6 +186,25 @@ export class TourismService {
     }
   }
 
+  private mapPlaceToSavedPlaceInput(place: TourismPlace) {
+    const primaryImage = place.images?.[0];
+
+    return {
+      placeId: place.id,
+      googlePlaceId: place.googlePlaceId,
+      name: place.name,
+      photoUrl: primaryImage?.url ?? place.imageUrl,
+      photoReference: primaryImage?.photoReference,
+      location: {
+        latitude: place.coordinates?.latitude ?? null,
+        longitude: place.coordinates?.longitude ?? null,
+        address: place.address?.formattedAddress,
+        districtName: place.districtName ?? place.address?.district,
+        regionName: place.address?.region,
+      },
+    };
+  }
+
   private async reverseGeocodeBatchItem(location: TourismGeoPoint): Promise<GeocodeResult[]> {
     try {
       return await this.reverseGeocode(location.latitude, location.longitude);
@@ -196,6 +238,22 @@ export async function listTourismPlaces(filters?: TourismLocationFilter): Promis
 
 export async function getTourismPlaceById(placeId: string): Promise<TourismPlace | null> {
   return tourismService.getPlaceById(placeId);
+}
+
+export async function savePlace(userId: string, place: TourismPlace): Promise<void> {
+  return tourismService.savePlace(userId, place);
+}
+
+export async function unsavePlace(userId: string, placeId: string): Promise<void> {
+  return tourismService.unsavePlace(userId, placeId);
+}
+
+export async function isPlaceSaved(userId: string, placeId: string): Promise<boolean> {
+  return tourismService.isPlaceSaved(userId, placeId);
+}
+
+export async function getSavedPlaces(userId: string): Promise<SavedPlace[]> {
+  return tourismService.getSavedPlaces(userId);
 }
 
 export async function getPlaceDetailsBatch(placeIds: string[]): Promise<(TourismPlace | null | undefined)[]> {

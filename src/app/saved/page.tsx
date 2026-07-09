@@ -1,5 +1,5 @@
-import { FutureRoutePage } from "@/components/shared/future-route-page";
+import { SavedPlacesExperience } from "@/features/saved-places/saved-places-experience";
 
 export default function SavedPage() {
-  return <FutureRoutePage title="Saved" description="Saved places are prepared for a future authenticated experience." />;
+  return <SavedPlacesExperience />;
 }

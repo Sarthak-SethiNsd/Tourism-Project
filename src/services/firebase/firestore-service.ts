@@ -14,3 +14,11 @@ export function getCollectionRef(collectionName: keyof typeof firestoreCollectio
 export function getDocumentRef(collectionName: keyof typeof firestoreCollections, id: string) {
   return doc(getFirebaseFirestore(), firestoreCollections[collectionName], id);
 }
+
+export function getUserSavedPlacesCollectionRef(userId: string) {
+  return collection(getDocumentRef("users", userId), firestoreCollections.savedPlaces);
+}
+
+export function getUserSavedPlaceDocumentRef(userId: string, placeId: string) {
+  return doc(getUserSavedPlacesCollectionRef(userId), placeId);
+}
