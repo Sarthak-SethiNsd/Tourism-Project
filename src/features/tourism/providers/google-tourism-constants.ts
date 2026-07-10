@@ -64,6 +64,7 @@ export const GOOGLE_PLACE_DETAILS_FIELD_MASK = [
   "paymentOptions",
   "restroom",
   "photos",
+  "reviews",
 ].join(",");
 
 export const GOOGLE_PLACES_NEARBY_FIELD_MASK = [

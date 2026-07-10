@@ -10,6 +10,7 @@ export type {
   TourismLocationFilter,
   TourismPlace,
   TourismPlaceImage,
+  TourismPlaceReview,
   TourismPriceLevel,
 } from "@/types/tourism";
 export type { IndianDistrict, IndianRegion, ExploreScope, LocationSelection, RegionType } from "@/features/tourism/types/region";

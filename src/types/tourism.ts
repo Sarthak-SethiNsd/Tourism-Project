@@ -62,6 +62,16 @@ export type TourismBudget = {
   currencyCode?: string;
 };
 
+export type TourismPlaceReview = {
+  id: string;
+  reviewerName: string;
+  reviewerProfilePhotoUrl?: string;
+  rating: number;
+  relativePublishTimeDescription: string;
+  text: string;
+  publishTime?: string;
+};
+
 export type TourismPlace = {
   id: EntityId;
   name: string;
@@ -83,6 +93,7 @@ export type TourismPlace = {
   budget?: TourismBudget;
   rating: number;
   reviewsCount?: number;
+  reviews?: TourismPlaceReview[];
   tags: string[];
   isFeatured?: boolean;
   imageUrl?: string;

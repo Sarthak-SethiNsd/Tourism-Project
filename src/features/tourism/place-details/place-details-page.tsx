@@ -26,6 +26,7 @@ import {
   getTourismTravelInfo,
   listExternalTourismPlacePhotos,
 } from "@/features/tourism/services/tourism-service";
+import { PlaceReviews } from "@/features/tourism/place-details/place-reviews";
 import { SavePlaceButton } from "@/features/tourism/place-details/save-place-button";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
@@ -198,6 +199,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
         </section>
 
         <PhotosGallery placeName={place.name} photos={galleryImages} />
+        <PlaceReviews reviews={place.reviews} />
         <NearbyAttractions attractions={nearbyAttractions.filter((attraction) => attraction.id !== place.id).slice(0, 6)} />
       </main>
     </AppShell>

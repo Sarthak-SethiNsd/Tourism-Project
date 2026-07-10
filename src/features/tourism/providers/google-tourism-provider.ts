@@ -164,6 +164,28 @@ type GooglePlace = {
   paymentOptions?: GooglePaymentOptions;
   restroom?: boolean;
   photos?: GooglePhoto[];
+  reviews?: GoogleReview[];
+};
+
+type GoogleReview = {
+  name?: string;
+  relativePublishTimeDescription?: string;
+  rating?: number;
+  text?: GoogleLocalizedText;
+  originalText?: GoogleLocalizedText;
+  authorAttribution?: GoogleReviewAuthorAttribution;
+  publishTime?: string;
+};
+
+type GoogleLocalizedText = {
+  text?: string;
+  languageCode?: string;
+};
+
+type GoogleReviewAuthorAttribution = {
+  displayName?: string;
+  uri?: string;
+  photoUri?: string;
 };
 
 type GooglePhoto = {
@@ -887,6 +909,7 @@ export class GoogleTourismProvider implements TourismProvider {
     const editorialSummary = place.editorialSummary?.text;
     const images = this.mapGooglePhotosToTourismImages(place.photos, name, existingPlace);
     const imageUrl = images[0]?.url ?? existingPlace?.imageUrl;
+    const reviews = this.mapGoogleReviews(place.reviews) ?? existingPlace?.reviews;
 
     if (!categoryIds.length || !priceLevel || (typeof place.rating !== "number" && typeof existingPlace?.rating !== "number")) {
       return null;
@@ -908,6 +931,7 @@ export class GoogleTourismProvider implements TourismProvider {
       priceLevel,
       rating: place.rating ?? existingPlace?.rating ?? 0,
       reviewsCount: place.userRatingCount,
+      reviews,
       tags: place.types ?? existingPlace?.tags ?? [],
       imageUrl,
       images: images.length ? images : existingPlace?.images,
@@ -951,6 +975,34 @@ export class GoogleTourismProvider implements TourismProvider {
     }
 
     return Array.from(categoryIds);
+  }
+
+  private mapGoogleReviews(reviews: GoogleReview[] | undefined) {
+    if (!Array.isArray(reviews)) {
+      return undefined;
+    }
+
+    return reviews
+      .map((review, index) => {
+        const text = review.text?.text ?? review.originalText?.text;
+        const reviewerName = review.authorAttribution?.displayName;
+        const rating = review.rating;
+
+        if (!text || !reviewerName || typeof rating !== "number") {
+          return null;
+        }
+
+        return {
+          id: review.name ?? `${reviewerName}-${review.publishTime ?? index}`,
+          reviewerName,
+          reviewerProfilePhotoUrl: review.authorAttribution?.photoUri,
+          rating,
+          relativePublishTimeDescription: review.relativePublishTimeDescription ?? "",
+          text,
+          publishTime: review.publishTime,
+        };
+      })
+      .filter((review): review is NonNullable<typeof review> => Boolean(review));
   }
 
   private mapGooglePlaceToNearbyPlace(
