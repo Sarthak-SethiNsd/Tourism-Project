@@ -10,6 +10,7 @@ type PlaceCardProps = {
   categories: TourismCategory[];
   region?: IndianRegion;
   district?: IndianDistrict;
+  onOpen?: () => void;
 };
 
 const priceLabelByLevel: Record<TourismPlace["priceLevel"], string> = {
@@ -19,9 +20,9 @@ const priceLabelByLevel: Record<TourismPlace["priceLevel"], string> = {
   premium: "Premium",
 };
 
-export function PlaceCard({ place, categories, region, district }: PlaceCardProps) {
+export function PlaceCard({ place, categories, region, district, onOpen }: PlaceCardProps) {
   return (
-    <Link href={`/place/${place.id}`} className="group block h-full">
+    <Link href={`/place/${place.id}`} className="group block h-full" onClick={onOpen}>
       <Card className="h-full overflow-hidden border-primary/10 bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
         <div className="relative aspect-[16/10] overflow-hidden bg-muted">
           {place.imageUrl ? (

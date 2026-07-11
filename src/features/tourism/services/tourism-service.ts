@@ -1,11 +1,18 @@
 import { activeTourismProvider } from "@/features/tourism/providers/active-tourism-provider";
 import type { SavedPlace } from "@/features/saved-places/types";
+import type { SearchHistoryEntry, SearchHistoryInput } from "@/features/search-history/types";
 import {
   isUserPlaceSaved,
   listSavedPlaces,
   saveUserPlace,
   unsaveUserPlace,
 } from "@/features/saved-places/services/saved-places-service";
+import {
+  clearUserSearchHistory,
+  deleteUserSearchHistoryEntry,
+  listUserSearchHistory,
+  saveUserSearchHistoryEntry,
+} from "@/features/search-history/services/search-history-service";
 import type {
   AutocompleteOptions,
   AutocompleteSuggestion,
@@ -26,6 +33,12 @@ import type {
 import type { IndianDistrict, IndianRegion } from "@/features/tourism/types/region";
 import { filterTourismPlaces } from "@/features/tourism/utils/place-filters";
 import type { TourismCategory, TourismLocationFilter, TourismPlace } from "@/types/tourism";
+
+type PlaceSearchHistoryContext = {
+  district?: IndianDistrict;
+  region?: IndianRegion;
+  primaryCategory?: TourismCategory;
+};
 
 export class TourismService {
   constructor(private readonly provider: TourismProvider) {}
@@ -64,6 +77,26 @@ export class TourismService {
 
   getSavedPlaces(userId: string): Promise<SavedPlace[]> {
     return listSavedPlaces(userId);
+  }
+
+  saveSearchHistoryEntry(
+    userId: string,
+    place: TourismPlace,
+    context?: PlaceSearchHistoryContext,
+  ): Promise<void> {
+    return saveUserSearchHistoryEntry(userId, this.mapPlaceToSearchHistoryInput(place, context));
+  }
+
+  getSearchHistory(userId: string): Promise<SearchHistoryEntry[]> {
+    return listUserSearchHistory(userId);
+  }
+
+  deleteSearchHistoryEntry(userId: string, entryId: string): Promise<void> {
+    return deleteUserSearchHistoryEntry(userId, entryId);
+  }
+
+  clearSearchHistory(userId: string): Promise<void> {
+    return clearUserSearchHistory(userId);
   }
 
   getPlaceDetailsBatch(placeIds: string[]): Promise<(TourismPlace | null | undefined)[]> {
@@ -205,6 +238,26 @@ export class TourismService {
     };
   }
 
+  private mapPlaceToSearchHistoryInput(
+    place: TourismPlace,
+    context?: PlaceSearchHistoryContext,
+  ): SearchHistoryInput {
+    const primaryImage = place.images?.[0];
+    const primaryCategory = context?.primaryCategory;
+
+    return {
+      placeId: place.id,
+      googlePlaceId: place.googlePlaceId,
+      placeName: place.name,
+      district: context?.district?.name ?? place.districtName ?? place.address?.district,
+      state: context?.region?.name ?? place.address?.region,
+      country: place.address?.country ?? "India",
+      primaryCategory: primaryCategory?.name ?? place.categoryIds[0],
+      thumbnailPhotoReference: primaryImage?.photoReference,
+      thumbnailUrl: primaryImage?.url ?? place.imageUrl,
+    };
+  }
+
   private async reverseGeocodeBatchItem(location: TourismGeoPoint): Promise<GeocodeResult[]> {
     try {
       return await this.reverseGeocode(location.latitude, location.longitude);
@@ -254,6 +307,26 @@ export async function isPlaceSaved(userId: string, placeId: string): Promise<boo
 
 export async function getSavedPlaces(userId: string): Promise<SavedPlace[]> {
   return tourismService.getSavedPlaces(userId);
+}
+
+export async function saveSearchHistoryEntry(
+  userId: string,
+  place: TourismPlace,
+  context?: PlaceSearchHistoryContext,
+): Promise<void> {
+  return tourismService.saveSearchHistoryEntry(userId, place, context);
+}
+
+export async function getSearchHistory(userId: string): Promise<SearchHistoryEntry[]> {
+  return tourismService.getSearchHistory(userId);
+}
+
+export async function deleteSearchHistoryEntry(userId: string, entryId: string): Promise<void> {
+  return tourismService.deleteSearchHistoryEntry(userId, entryId);
+}
+
+export async function clearSearchHistory(userId: string): Promise<void> {
+  return tourismService.clearSearchHistory(userId);
 }
 
 export async function getPlaceDetailsBatch(placeIds: string[]): Promise<(TourismPlace | null | undefined)[]> {

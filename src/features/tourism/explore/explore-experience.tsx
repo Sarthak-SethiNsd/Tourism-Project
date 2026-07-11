@@ -14,6 +14,9 @@ import { filterTourismPlaces } from "@/features/tourism/utils/place-filters";
 import { CategoryCard } from "@/features/tourism/explore/category-card";
 import { ExploreFilterBar, type ExploreFilterState } from "@/features/tourism/explore/explore-filter-bar";
 import { PlaceCard } from "@/features/tourism/explore/place-card";
+import { hasFirebaseConfig } from "@/config/firebase";
+import { useAuthUser } from "@/features/authentication/hooks/use-auth-user";
+import { saveSearchHistoryEntry } from "@/features/tourism/services/tourism-service";
 
 type ExploreExperienceProps = {
   places: TourismPlace[];
@@ -47,6 +50,7 @@ function buildDistrictMap(districts: IndianDistrict[]) {
 export function ExploreExperience({ places, categories, regions, initialFilters }: ExploreExperienceProps) {
   const [filters, setFilters] = useState<ExploreFilterState>({ ...defaultFilters, ...initialFilters });
   const { districts } = useDistrictsByRegion(filters.stateId || undefined);
+  const { user } = useAuthUser();
 
   const regionById = useMemo(() => new Map(regions.map((region) => [region.id, region])), [regions]);
   const districtById = useMemo(() => buildDistrictMap(districts), [districts]);
@@ -73,6 +77,20 @@ export function ExploreExperience({ places, categories, regions, initialFilters 
 
   function clearFilters() {
     setFilters(defaultFilters);
+  }
+
+  function handlePlaceOpen(place: TourismPlace) {
+    const query = filters.query.trim();
+
+    if (!query || !hasFirebaseConfig || !user) {
+      return;
+    }
+
+    void saveSearchHistoryEntry(user.uid, place, {
+      district: districtById.get(place.districtId),
+      region: regionById.get(place.stateId),
+      primaryCategory: getCategoryList(place, categories)[0],
+    });
   }
 
   return (
@@ -185,6 +203,7 @@ export function ExploreExperience({ places, categories, regions, initialFilters 
                   categories={getCategoryList(place, categories)}
                   region={regionById.get(place.stateId)}
                   district={districtById.get(place.districtId)}
+                  onOpen={() => handlePlaceOpen(place)}
                 />
               ))}
             </div>
