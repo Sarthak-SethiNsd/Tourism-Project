@@ -213,9 +213,9 @@ export class TourismService {
 
   private async getPlaceDetailsBatchItem(placeId: string): Promise<TourismPlace | null | undefined> {
     try {
-      return await this.provider.getExternalPlaceDetails(placeId);
+      return (await this.provider.getExternalPlaceDetails(placeId)) ?? this.getPlaceById(placeId);
     } catch {
-      return undefined;
+      return this.getPlaceById(placeId);
     }
   }
 

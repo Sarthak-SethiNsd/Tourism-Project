@@ -4,6 +4,7 @@ import { Clock3, IndianRupee, MapPin, Star } from "lucide-react";
 import type { IndianDistrict, IndianRegion, TourismCategory, TourismPlace } from "@/features/tourism/types";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { ComparePlaceButton } from "@/features/compare-places/compare-place-button";
 
 type PlaceCardProps = {
   place: TourismPlace;
@@ -22,8 +23,8 @@ const priceLabelByLevel: Record<TourismPlace["priceLevel"], string> = {
 
 export function PlaceCard({ place, categories, region, district, onOpen }: PlaceCardProps) {
   return (
-    <Link href={`/place/${place.id}`} className="group block h-full" onClick={onOpen}>
-      <Card className="h-full overflow-hidden border-primary/10 bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+    <Card className="group h-full overflow-hidden border-primary/10 bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+      <Link href={`/place/${place.id}`} className="block" onClick={onOpen}>
         <div className="relative aspect-[16/10] overflow-hidden bg-muted">
           {place.imageUrl ? (
             <Image
@@ -41,7 +42,9 @@ export function PlaceCard({ place, categories, region, district, onOpen }: Place
             </div>
           </div>
         </div>
-        <CardContent className="flex flex-col gap-4 p-4">
+      </Link>
+      <CardContent className="flex flex-col gap-4 p-4">
+        <Link href={`/place/${place.id}`} onClick={onOpen} className="block">
           <div>
             <div className="mb-2 flex flex-wrap gap-2">
               {categories.slice(0, 2).map((category) => (
@@ -52,8 +55,7 @@ export function PlaceCard({ place, categories, region, district, onOpen }: Place
             </div>
             <h3 className="text-lg font-semibold tracking-tight">{place.name}</h3>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">{place.summary}</p>
-          </div>
-          <div className="mt-auto grid gap-2 text-xs font-medium text-muted-foreground">
+            <div className="mt-4 grid gap-2 text-xs font-medium text-muted-foreground">
             <span className="flex items-center gap-2">
               <MapPin className="size-3.5" aria-hidden />
               {district?.name ? `${district.name}, ` : ""}
@@ -67,9 +69,11 @@ export function PlaceCard({ place, categories, region, district, onOpen }: Place
               <IndianRupee className="size-3.5" aria-hidden />
               {priceLabelByLevel[place.priceLevel]}
             </span>
+            </div>
           </div>
-        </CardContent>
-      </Card>
-    </Link>
+        </Link>
+        <ComparePlaceButton placeId={place.id} />
+      </CardContent>
+    </Card>
   );
 }

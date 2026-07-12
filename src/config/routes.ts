@@ -7,6 +7,7 @@ export const routes = {
   categories: "/categories",
   place: "/place",
   saved: "/saved",
+  compare: "/compare",
   profile: "/profile",
   settings: "/settings",
   auth: "/login",

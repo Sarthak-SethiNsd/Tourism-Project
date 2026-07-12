@@ -28,6 +28,7 @@ import {
 } from "@/features/tourism/services/tourism-service";
 import { PlaceReviews } from "@/features/tourism/place-details/place-reviews";
 import { SavePlaceButton } from "@/features/tourism/place-details/save-place-button";
+import { ComparePlaceButton } from "@/features/compare-places/compare-place-button";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
 type PlaceDetailsPageProps = {
@@ -121,7 +122,10 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
                 </Badge>
               </div>
 
-              <SavePlaceButton place={place} />
+              <div className="grid gap-3 sm:grid-cols-2">
+                <SavePlaceButton place={place} />
+                <ComparePlaceButton placeId={place.id} />
+              </div>
 
               <div className="grid gap-3 text-sm text-muted-foreground">
                 <InfoLine icon={MapPin} value={address} />

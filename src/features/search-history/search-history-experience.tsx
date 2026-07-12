@@ -21,6 +21,7 @@ import {
   deleteSearchHistoryEntry,
   getSearchHistory,
 } from "@/features/tourism/services/tourism-service";
+import { ComparePlaceButton } from "@/features/compare-places/compare-place-button";
 
 export function SearchHistoryExperience() {
   const { user, isReady } = useAuthUser();
@@ -257,16 +258,19 @@ function SearchHistoryCard({
           </p>
           <p className="text-xs font-medium text-muted-foreground">Searched {formatSearchDate(entry.searchedAt)}</p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          className="w-fit"
-          disabled={isDeleting}
-          onClick={() => onDelete(entry.id)}
-        >
-          {isDeleting ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <Trash2 className="size-4" aria-hidden />}
-          Delete
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-fit"
+            disabled={isDeleting}
+            onClick={() => onDelete(entry.id)}
+          >
+            {isDeleting ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <Trash2 className="size-4" aria-hidden />}
+            Delete
+          </Button>
+          <ComparePlaceButton placeId={entry.placeId} className="w-fit" />
+        </div>
       </CardContent>
     </Card>
   );

@@ -16,6 +16,7 @@ import { signInWithGoogle } from "@/features/authentication/services/authenticat
 import { useAuthUser } from "@/features/authentication/hooks/use-auth-user";
 import type { SavedPlace } from "@/features/saved-places/types";
 import { getSavedPlaces, unsavePlace } from "@/features/tourism/services/tourism-service";
+import { ComparePlaceButton } from "@/features/compare-places/compare-place-button";
 
 export function SavedPlacesExperience() {
   const { user, isReady } = useAuthUser();
@@ -213,16 +214,19 @@ function SavedPlaceCard({
           ) : null}
           <p className="mt-2 text-xs font-medium text-muted-foreground">Saved {formatSavedDate(place.savedAt)}</p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          className="w-fit"
-          disabled={isRemoving}
-          onClick={() => onRemove(place.placeId)}
-        >
-          {isRemoving ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <HeartOff className="size-4" aria-hidden />}
-          Remove
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-fit"
+            disabled={isRemoving}
+            onClick={() => onRemove(place.placeId)}
+          >
+            {isRemoving ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <HeartOff className="size-4" aria-hidden />}
+            Remove
+          </Button>
+          <ComparePlaceButton placeId={place.placeId} className="w-fit" />
+        </div>
       </CardContent>
     </Card>
   );
