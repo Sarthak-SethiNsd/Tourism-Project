@@ -1,6 +1,7 @@
 import { activeTourismProvider } from "@/features/tourism/providers/active-tourism-provider";
 import type { SavedPlace } from "@/features/saved-places/types";
 import type { SearchHistoryEntry, SearchHistoryInput } from "@/features/search-history/types";
+import type { RecentlyViewedPlace, RecentlyViewedPlaceInput } from "@/features/recently-viewed/types";
 import {
   isUserPlaceSaved,
   listSavedPlaces,
@@ -13,6 +14,18 @@ import {
   listUserSearchHistory,
   saveUserSearchHistoryEntry,
 } from "@/features/search-history/services/search-history-service";
+import {
+  clearUserRecentlyViewedPlaces,
+  deleteUserRecentlyViewedPlace,
+  listUserRecentlyViewedPlaces,
+  saveUserRecentlyViewedPlace,
+} from "@/features/recently-viewed/services/recently-viewed-service";
+import {
+  clearLocalRecentlyViewedPlaces,
+  getLocalRecentlyViewedPlaces,
+  removeLocalRecentlyViewedPlace,
+  saveLocalRecentlyViewedPlace,
+} from "@/features/recently-viewed/services/recently-viewed-local-storage";
 import type {
   AutocompleteOptions,
   AutocompleteSuggestion,
@@ -97,6 +110,39 @@ export class TourismService {
 
   clearSearchHistory(userId: string): Promise<void> {
     return clearUserSearchHistory(userId);
+  }
+
+  saveRecentlyViewedPlace(userId: string | undefined, place: TourismPlace, context?: PlaceSearchHistoryContext): Promise<void> {
+    const input = this.mapPlaceToRecentlyViewedInput(place, context);
+
+    if (userId) {
+      return saveUserRecentlyViewedPlace(userId, input);
+    }
+
+    saveLocalRecentlyViewedPlace(input);
+    return Promise.resolve();
+  }
+
+  getRecentlyViewedPlaces(userId?: string): Promise<RecentlyViewedPlace[]> {
+    return userId ? listUserRecentlyViewedPlaces(userId) : Promise.resolve(getLocalRecentlyViewedPlaces());
+  }
+
+  deleteRecentlyViewedPlace(userId: string | undefined, placeId: string): Promise<void> {
+    if (userId) {
+      return deleteUserRecentlyViewedPlace(userId, placeId);
+    }
+
+    removeLocalRecentlyViewedPlace(placeId);
+    return Promise.resolve();
+  }
+
+  clearRecentlyViewedPlaces(userId?: string): Promise<void> {
+    if (userId) {
+      return clearUserRecentlyViewedPlaces(userId);
+    }
+
+    clearLocalRecentlyViewedPlaces();
+    return Promise.resolve();
   }
 
   getPlaceDetailsBatch(placeIds: string[]): Promise<(TourismPlace | null | undefined)[]> {
@@ -258,6 +304,24 @@ export class TourismService {
     };
   }
 
+  private mapPlaceToRecentlyViewedInput(
+    place: TourismPlace,
+    context?: PlaceSearchHistoryContext,
+  ): RecentlyViewedPlaceInput {
+    const primaryImage = place.images?.[0];
+
+    return {
+      placeId: place.id,
+      googlePlaceId: place.googlePlaceId,
+      placeName: place.name,
+      thumbnailPhotoReference: primaryImage?.photoReference,
+      thumbnailUrl: primaryImage?.url ?? place.imageUrl,
+      district: context?.district?.name ?? place.districtName ?? place.address?.district,
+      state: context?.region?.name ?? place.address?.region,
+      country: place.address?.country ?? "India",
+    };
+  }
+
   private async reverseGeocodeBatchItem(location: TourismGeoPoint): Promise<GeocodeResult[]> {
     try {
       return await this.reverseGeocode(location.latitude, location.longitude);
@@ -327,6 +391,26 @@ export async function deleteSearchHistoryEntry(userId: string, entryId: string):
 
 export async function clearSearchHistory(userId: string): Promise<void> {
   return tourismService.clearSearchHistory(userId);
+}
+
+export async function saveRecentlyViewedPlace(
+  userId: string | undefined,
+  place: TourismPlace,
+  context?: PlaceSearchHistoryContext,
+): Promise<void> {
+  return tourismService.saveRecentlyViewedPlace(userId, place, context);
+}
+
+export async function getRecentlyViewedPlaces(userId?: string): Promise<RecentlyViewedPlace[]> {
+  return tourismService.getRecentlyViewedPlaces(userId);
+}
+
+export async function deleteRecentlyViewedPlace(userId: string | undefined, placeId: string): Promise<void> {
+  return tourismService.deleteRecentlyViewedPlace(userId, placeId);
+}
+
+export async function clearRecentlyViewedPlaces(userId?: string): Promise<void> {
+  return tourismService.clearRecentlyViewedPlaces(userId);
 }
 
 export async function getPlaceDetailsBatch(placeIds: string[]): Promise<(TourismPlace | null | undefined)[]> {

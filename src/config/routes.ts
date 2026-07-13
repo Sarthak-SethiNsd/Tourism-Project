@@ -8,6 +8,7 @@ export const routes = {
   place: "/place",
   saved: "/saved",
   compare: "/compare",
+  recentlyViewed: "/recently-viewed",
   profile: "/profile",
   settings: "/settings",
   auth: "/login",

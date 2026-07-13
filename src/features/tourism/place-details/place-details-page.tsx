@@ -29,6 +29,7 @@ import {
 import { PlaceReviews } from "@/features/tourism/place-details/place-reviews";
 import { SavePlaceButton } from "@/features/tourism/place-details/save-place-button";
 import { ComparePlaceButton } from "@/features/compare-places/compare-place-button";
+import { RecentlyViewedTracker } from "@/features/recently-viewed/recently-viewed-tracker";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
 type PlaceDetailsPageProps = {
@@ -70,6 +71,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
 
   return (
     <AppShell>
+      <RecentlyViewedTracker place={place} district={district} region={region} />
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 pb-8 pt-24 sm:px-8 lg:px-12">
         <Button asChild variant="ghost" className="w-fit rounded-lg">
           <Link href="/explore">
