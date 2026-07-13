@@ -28,6 +28,7 @@ import {
 } from "@/features/tourism/services/tourism-service";
 import { PlaceReviews } from "@/features/tourism/place-details/place-reviews";
 import { SavePlaceButton } from "@/features/tourism/place-details/save-place-button";
+import { SharePlaceButton } from "@/features/tourism/place-details/share-place-button";
 import { ComparePlaceButton } from "@/features/compare-places/compare-place-button";
 import { RecentlyViewedTracker } from "@/features/recently-viewed/recently-viewed-tracker";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
@@ -124,9 +125,10 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
                 </Badge>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-3">
                 <SavePlaceButton place={place} />
                 <ComparePlaceButton placeId={place.id} />
+                <SharePlaceButton placeId={place.id} placeName={place.name} address={address} />
               </div>
 
               <div className="grid gap-3 text-sm text-muted-foreground">
