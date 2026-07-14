@@ -9,6 +9,7 @@ export const routes = {
   saved: "/saved",
   compare: "/compare",
   recentlyViewed: "/recently-viewed",
+  tripPlanner: "/trip-planner",
   profile: "/profile",
   settings: "/settings",
   auth: "/login",

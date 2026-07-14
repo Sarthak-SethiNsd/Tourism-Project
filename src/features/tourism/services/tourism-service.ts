@@ -2,6 +2,7 @@ import { activeTourismProvider } from "@/features/tourism/providers/active-touri
 import type { SavedPlace } from "@/features/saved-places/types";
 import type { SearchHistoryEntry, SearchHistoryInput } from "@/features/search-history/types";
 import type { RecentlyViewedPlace, RecentlyViewedPlaceInput } from "@/features/recently-viewed/types";
+import type { Trip, TripInput, TripPlace, TripPlaceInput } from "@/features/trip-planner/types";
 import {
   isUserPlaceSaved,
   listSavedPlaces,
@@ -26,6 +27,20 @@ import {
   removeLocalRecentlyViewedPlace,
   saveLocalRecentlyViewedPlace,
 } from "@/features/recently-viewed/services/recently-viewed-local-storage";
+import {
+  addPlaceToLocalTrip,
+  createLocalTrip,
+  deleteLocalTrip,
+  getLocalTrips,
+  updateLocalTripPlaces,
+} from "@/features/trip-planner/services/trip-local-storage";
+import {
+  addPlaceToUserTrip,
+  createUserTrip,
+  deleteUserTrip,
+  listUserTrips,
+  updateUserTripPlaces,
+} from "@/features/trip-planner/services/trip-service";
 import type {
   AutocompleteOptions,
   AutocompleteSuggestion,
@@ -142,6 +157,46 @@ export class TourismService {
     }
 
     clearLocalRecentlyViewedPlaces();
+    return Promise.resolve();
+  }
+
+  createTrip(userId: string | undefined, input: TripInput): Promise<void> {
+    if (userId) {
+      return createUserTrip(userId, input);
+    }
+
+    createLocalTrip(input);
+    return Promise.resolve();
+  }
+
+  getTrips(userId?: string): Promise<Trip[]> {
+    return userId ? listUserTrips(userId) : Promise.resolve(getLocalTrips());
+  }
+
+  addPlaceToTrip(userId: string | undefined, tripId: string, place: TripPlaceInput): Promise<void> {
+    if (userId) {
+      return addPlaceToUserTrip(userId, tripId, place);
+    }
+
+    addPlaceToLocalTrip(tripId, place);
+    return Promise.resolve();
+  }
+
+  updateTripPlaces(userId: string | undefined, tripId: string, places: TripPlace[]): Promise<void> {
+    if (userId) {
+      return updateUserTripPlaces(userId, tripId, places);
+    }
+
+    updateLocalTripPlaces(tripId, places);
+    return Promise.resolve();
+  }
+
+  deleteTrip(userId: string | undefined, tripId: string): Promise<void> {
+    if (userId) {
+      return deleteUserTrip(userId, tripId);
+    }
+
+    deleteLocalTrip(tripId);
     return Promise.resolve();
   }
 
@@ -411,6 +466,26 @@ export async function deleteRecentlyViewedPlace(userId: string | undefined, plac
 
 export async function clearRecentlyViewedPlaces(userId?: string): Promise<void> {
   return tourismService.clearRecentlyViewedPlaces(userId);
+}
+
+export async function createTrip(userId: string | undefined, input: TripInput): Promise<void> {
+  return tourismService.createTrip(userId, input);
+}
+
+export async function getTrips(userId?: string): Promise<Trip[]> {
+  return tourismService.getTrips(userId);
+}
+
+export async function addPlaceToTrip(userId: string | undefined, tripId: string, place: TripPlaceInput): Promise<void> {
+  return tourismService.addPlaceToTrip(userId, tripId, place);
+}
+
+export async function updateTripPlaces(userId: string | undefined, tripId: string, places: TripPlace[]): Promise<void> {
+  return tourismService.updateTripPlaces(userId, tripId, places);
+}
+
+export async function deleteTrip(userId: string | undefined, tripId: string): Promise<void> {
+  return tourismService.deleteTrip(userId, tripId);
 }
 
 export async function getPlaceDetailsBatch(placeIds: string[]): Promise<(TourismPlace | null | undefined)[]> {

@@ -7,6 +7,7 @@ export const firestoreCollections = {
   savedPlaces: "savedPlaces",
   searchHistory: "searchHistory",
   recentlyViewed: "recentlyViewed",
+  trips: "trips",
 } as const;
 
 export function getCollectionRef(collectionName: keyof typeof firestoreCollections) {
@@ -39,4 +40,12 @@ export function getUserRecentlyViewedCollectionRef(userId: string) {
 
 export function getUserRecentlyViewedDocumentRef(userId: string, placeId: string) {
   return doc(getUserRecentlyViewedCollectionRef(userId), placeId);
+}
+
+export function getUserTripsCollectionRef(userId: string) {
+  return collection(getDocumentRef("users", userId), firestoreCollections.trips);
+}
+
+export function getUserTripDocumentRef(userId: string, tripId: string) {
+  return doc(getUserTripsCollectionRef(userId), tripId);
 }
