@@ -18,6 +18,7 @@ import type { SavedPlace } from "@/features/saved-places/types";
 import { getSavedPlaces, unsavePlace } from "@/features/tourism/services/tourism-service";
 import { ComparePlaceButton } from "@/features/compare-places/compare-place-button";
 import { AddToTripButton } from "@/features/trip-planner/add-to-trip-button";
+import { AddToCollectionButton } from "@/features/collections/add-to-collection-button";
 
 export function SavedPlacesExperience() {
   const { user, isReady } = useAuthUser();
@@ -228,6 +229,18 @@ function SavedPlaceCard({
           </Button>
           <ComparePlaceButton placeId={place.placeId} className="w-fit" />
           <AddToTripButton
+            className="w-fit"
+            place={{
+              placeId: place.placeId,
+              googlePlaceId: place.googlePlaceId,
+              placeName: place.name,
+              thumbnailUrl: place.photoUrl,
+              thumbnailPhotoReference: place.photoReference,
+              district: place.location?.districtName,
+              state: place.location?.regionName,
+            }}
+          />
+          <AddToCollectionButton
             className="w-fit"
             place={{
               placeId: place.placeId,

@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ComparePlaceButton } from "@/features/compare-places/compare-place-button";
 import { AddToTripButton } from "@/features/trip-planner/add-to-trip-button";
 import { createTripPlaceInput } from "@/features/trip-planner/trip-place";
+import { AddToCollectionButton } from "@/features/collections/add-to-collection-button";
+import { createCollectionPlaceInput } from "@/features/collections/collection-place";
 
 type PlaceCardProps = {
   place: TourismPlace;
@@ -76,6 +78,7 @@ export function PlaceCard({ place, categories, region, district, onOpen }: Place
         </Link>
         <ComparePlaceButton placeId={place.id} />
         <AddToTripButton place={createTripPlaceInput(place, district, region)} />
+        <AddToCollectionButton place={createCollectionPlaceInput(place, district, region)} />
       </CardContent>
     </Card>
   );

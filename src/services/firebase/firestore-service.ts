@@ -8,6 +8,7 @@ export const firestoreCollections = {
   searchHistory: "searchHistory",
   recentlyViewed: "recentlyViewed",
   trips: "trips",
+  collections: "collections",
 } as const;
 
 export function getCollectionRef(collectionName: keyof typeof firestoreCollections) {
@@ -48,4 +49,12 @@ export function getUserTripsCollectionRef(userId: string) {
 
 export function getUserTripDocumentRef(userId: string, tripId: string) {
   return doc(getUserTripsCollectionRef(userId), tripId);
+}
+
+export function getUserCollectionsCollectionRef(userId: string) {
+  return collection(getDocumentRef("users", userId), firestoreCollections.collections);
+}
+
+export function getUserCollectionDocumentRef(userId: string, collectionId: string) {
+  return doc(getUserCollectionsCollectionRef(userId), collectionId);
 }

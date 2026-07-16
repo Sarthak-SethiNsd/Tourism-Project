@@ -3,6 +3,7 @@ import type { SavedPlace } from "@/features/saved-places/types";
 import type { SearchHistoryEntry, SearchHistoryInput } from "@/features/search-history/types";
 import type { RecentlyViewedPlace, RecentlyViewedPlaceInput } from "@/features/recently-viewed/types";
 import type { Trip, TripInput, TripPlace, TripPlaceInput } from "@/features/trip-planner/types";
+import type { CollectionInput, CollectionPlace, CollectionPlaceInput, PlaceCollection } from "@/features/collections/types";
 import {
   isUserPlaceSaved,
   listSavedPlaces,
@@ -41,6 +42,22 @@ import {
   listUserTrips,
   updateUserTripPlaces,
 } from "@/features/trip-planner/services/trip-service";
+import {
+  addPlaceToLocalCollection,
+  createLocalCollection,
+  deleteLocalCollection,
+  getLocalCollections,
+  removePlaceFromLocalCollection,
+  renameLocalCollection,
+} from "@/features/collections/services/collections-local-storage";
+import {
+  addPlaceToUserCollection,
+  createUserCollection,
+  deleteUserCollection,
+  listUserCollections,
+  removePlaceFromUserCollection,
+  renameUserCollection,
+} from "@/features/collections/services/collections-service";
 import type {
   AutocompleteOptions,
   AutocompleteSuggestion,
@@ -197,6 +214,40 @@ export class TourismService {
     }
 
     deleteLocalTrip(tripId);
+    return Promise.resolve();
+  }
+
+  createCollection(userId: string | undefined, input: CollectionInput): Promise<void> {
+    if (userId) return createUserCollection(userId, input);
+    createLocalCollection(input);
+    return Promise.resolve();
+  }
+
+  getCollections(userId?: string): Promise<PlaceCollection[]> {
+    return userId ? listUserCollections(userId) : Promise.resolve(getLocalCollections());
+  }
+
+  addPlaceToCollection(userId: string | undefined, collectionId: string, place: CollectionPlaceInput): Promise<void> {
+    if (userId) return addPlaceToUserCollection(userId, collectionId, place);
+    addPlaceToLocalCollection(collectionId, place);
+    return Promise.resolve();
+  }
+
+  removePlaceFromCollection(userId: string | undefined, collectionId: string, places: CollectionPlace[]): Promise<void> {
+    if (userId) return removePlaceFromUserCollection(userId, collectionId, places);
+    removePlaceFromLocalCollection(collectionId, places);
+    return Promise.resolve();
+  }
+
+  renameCollection(userId: string | undefined, collectionId: string, input: CollectionInput): Promise<void> {
+    if (userId) return renameUserCollection(userId, collectionId, input);
+    renameLocalCollection(collectionId, input);
+    return Promise.resolve();
+  }
+
+  deleteCollection(userId: string | undefined, collectionId: string): Promise<void> {
+    if (userId) return deleteUserCollection(userId, collectionId);
+    deleteLocalCollection(collectionId);
     return Promise.resolve();
   }
 
@@ -486,6 +537,30 @@ export async function updateTripPlaces(userId: string | undefined, tripId: strin
 
 export async function deleteTrip(userId: string | undefined, tripId: string): Promise<void> {
   return tourismService.deleteTrip(userId, tripId);
+}
+
+export async function createCollection(userId: string | undefined, input: CollectionInput): Promise<void> {
+  return tourismService.createCollection(userId, input);
+}
+
+export async function getCollections(userId?: string): Promise<PlaceCollection[]> {
+  return tourismService.getCollections(userId);
+}
+
+export async function addPlaceToCollection(userId: string | undefined, collectionId: string, place: CollectionPlaceInput): Promise<void> {
+  return tourismService.addPlaceToCollection(userId, collectionId, place);
+}
+
+export async function removePlaceFromCollection(userId: string | undefined, collectionId: string, places: CollectionPlace[]): Promise<void> {
+  return tourismService.removePlaceFromCollection(userId, collectionId, places);
+}
+
+export async function renameCollection(userId: string | undefined, collectionId: string, input: CollectionInput): Promise<void> {
+  return tourismService.renameCollection(userId, collectionId, input);
+}
+
+export async function deleteCollection(userId: string | undefined, collectionId: string): Promise<void> {
+  return tourismService.deleteCollection(userId, collectionId);
 }
 
 export async function getPlaceDetailsBatch(placeIds: string[]): Promise<(TourismPlace | null | undefined)[]> {

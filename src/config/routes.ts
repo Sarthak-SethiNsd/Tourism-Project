@@ -10,6 +10,7 @@ export const routes = {
   compare: "/compare",
   recentlyViewed: "/recently-viewed",
   tripPlanner: "/trip-planner",
+  collections: "/collections",
   profile: "/profile",
   settings: "/settings",
   auth: "/login",

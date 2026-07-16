@@ -19,6 +19,7 @@ import {
   getRecentlyViewedPlaces,
 } from "@/features/tourism/services/tourism-service";
 import { useAuthUser } from "@/features/authentication/hooks/use-auth-user";
+import { AddToCollectionButton } from "@/features/collections/add-to-collection-button";
 
 export function RecentlyViewedExperience() {
   const { user, isReady } = useAuthUser();
@@ -187,6 +188,17 @@ function RecentlyViewedCard({
             {isRemoving ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <Trash2 className="size-4" aria-hidden />}
             Remove
           </Button>
+          <AddToCollectionButton
+            place={{
+              placeId: place.placeId,
+              googlePlaceId: place.googlePlaceId,
+              placeName: place.placeName,
+              thumbnailUrl: place.thumbnailUrl,
+              thumbnailPhotoReference: place.thumbnailPhotoReference,
+              district: place.district,
+              state: place.state,
+            }}
+          />
         </div>
       </CardContent>
     </Card>

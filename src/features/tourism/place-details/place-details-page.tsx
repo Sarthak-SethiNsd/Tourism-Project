@@ -33,6 +33,8 @@ import { ComparePlaceButton } from "@/features/compare-places/compare-place-butt
 import { RecentlyViewedTracker } from "@/features/recently-viewed/recently-viewed-tracker";
 import { AddToTripButton } from "@/features/trip-planner/add-to-trip-button";
 import { createTripPlaceInput } from "@/features/trip-planner/trip-place";
+import { AddToCollectionButton } from "@/features/collections/add-to-collection-button";
+import { createCollectionPlaceInput } from "@/features/collections/collection-place";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
 type PlaceDetailsPageProps = {
@@ -132,6 +134,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
                 <ComparePlaceButton placeId={place.id} />
                 <SharePlaceButton placeId={place.id} placeName={place.name} address={address} />
                 <AddToTripButton place={createTripPlaceInput(place, district, region)} />
+                <AddToCollectionButton place={createCollectionPlaceInput(place, district, region)} />
               </div>
 
               <div className="grid gap-3 text-sm text-muted-foreground">
