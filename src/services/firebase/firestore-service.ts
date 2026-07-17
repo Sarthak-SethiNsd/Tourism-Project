@@ -5,6 +5,7 @@ export const firestoreCollections = {
   users: "users",
   places: "places",
   savedPlaces: "savedPlaces",
+  wishlist: "wishlist",
   searchHistory: "searchHistory",
   recentlyViewed: "recentlyViewed",
   trips: "trips",
@@ -25,6 +26,14 @@ export function getUserSavedPlacesCollectionRef(userId: string) {
 
 export function getUserSavedPlaceDocumentRef(userId: string, placeId: string) {
   return doc(getUserSavedPlacesCollectionRef(userId), placeId);
+}
+
+export function getUserWishlistCollectionRef(userId: string) {
+  return collection(getDocumentRef("users", userId), firestoreCollections.wishlist);
+}
+
+export function getUserWishlistDocumentRef(userId: string, placeId: string) {
+  return doc(getUserWishlistCollectionRef(userId), placeId);
 }
 
 export function getUserSearchHistoryCollectionRef(userId: string) {

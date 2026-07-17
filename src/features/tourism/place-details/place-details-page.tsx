@@ -34,6 +34,7 @@ import { RecentlyViewedTracker } from "@/features/recently-viewed/recently-viewe
 import { AddToTripButton } from "@/features/trip-planner/add-to-trip-button";
 import { createTripPlaceInput } from "@/features/trip-planner/trip-place";
 import { AddToCollectionButton } from "@/features/collections/add-to-collection-button";
+import { WishlistButton } from "@/features/wishlist/wishlist-button";
 import { createCollectionPlaceInput } from "@/features/collections/collection-place";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
@@ -131,6 +132,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <SavePlaceButton place={place} />
+                <WishlistButton place={place} />
                 <ComparePlaceButton placeId={place.id} />
                 <SharePlaceButton placeId={place.id} placeName={place.name} address={address} />
                 <AddToTripButton place={createTripPlaceInput(place, district, region)} />

@@ -13,6 +13,7 @@ export const secondaryNavigation = [
   { label: "Recently viewed", href: routes.recentlyViewed, icon: History, disabled: false },
   { label: "Trip planner", href: routes.tripPlanner, icon: CalendarDays, disabled: false },
   { label: "Collections", href: routes.collections, icon: Bookmark, disabled: false },
+  { label: "Wishlist", href: routes.wishlist, icon: Heart, disabled: false },
   { label: "Profile", href: routes.profile, icon: UserRound, disabled: false },
   { label: "Settings", href: routes.settings, icon: Settings, disabled: false },
 ] as const;

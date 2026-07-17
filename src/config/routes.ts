@@ -7,6 +7,7 @@ export const routes = {
   categories: "/categories",
   place: "/place",
   saved: "/saved",
+  wishlist: "/wishlist",
   compare: "/compare",
   recentlyViewed: "/recently-viewed",
   tripPlanner: "/trip-planner",
