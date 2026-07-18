@@ -1,4 +1,4 @@
-import { Bookmark, CalendarDays, Compass, Heart, History, Home, Map, Scale, Settings, UserRound } from "lucide-react";
+import { Bookmark, CalendarDays, Check, Compass, Heart, History, Home, Map, Scale, Settings, UserRound } from "lucide-react";
 import { routes } from "@/config/routes";
 
 export const primaryNavigation = [
@@ -14,6 +14,7 @@ export const secondaryNavigation = [
   { label: "Trip planner", href: routes.tripPlanner, icon: CalendarDays, disabled: false },
   { label: "Collections", href: routes.collections, icon: Bookmark, disabled: false },
   { label: "Wishlist", href: routes.wishlist, icon: Heart, disabled: false },
+  { label: "Visited", href: routes.visited, icon: Check, disabled: false },
   { label: "Profile", href: routes.profile, icon: UserRound, disabled: false },
   { label: "Settings", href: routes.settings, icon: Settings, disabled: false },
 ] as const;

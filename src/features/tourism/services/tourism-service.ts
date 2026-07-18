@@ -5,6 +5,7 @@ import type { RecentlyViewedPlace, RecentlyViewedPlaceInput } from "@/features/r
 import type { Trip, TripInput, TripPlace, TripPlaceInput } from "@/features/trip-planner/types";
 import type { CollectionInput, CollectionPlace, CollectionPlaceInput, PlaceCollection } from "@/features/collections/types";
 import type { WishlistPlace, WishlistPlaceInput } from "@/features/wishlist/types";
+import type { VisitedPlace, VisitedPlaceInput } from "@/features/visited-places/types";
 import {
   isUserPlaceSaved,
   listSavedPlaces,
@@ -71,6 +72,18 @@ import {
   listUserWishlistPlaces,
   removeUserWishlistPlace,
 } from "@/features/wishlist/services/wishlist-service";
+import {
+  addLocalVisitedPlace,
+  getLocalVisitedPlaces,
+  isLocalVisitedPlace,
+  removeLocalVisitedPlace,
+} from "@/features/visited-places/services/visited-places-local-storage";
+import {
+  addUserVisitedPlace,
+  isUserVisitedPlace,
+  listUserVisitedPlaces,
+  removeUserVisitedPlace,
+} from "@/features/visited-places/services/visited-places-service";
 import type {
   AutocompleteOptions,
   AutocompleteSuggestion,
@@ -156,6 +169,27 @@ export class TourismService {
 
   getWishlistPlaces(userId?: string): Promise<WishlistPlace[]> {
     return userId ? listUserWishlistPlaces(userId) : Promise.resolve(getLocalWishlistPlaces());
+  }
+
+  addVisitedPlace(userId: string | undefined, place: TourismPlace): Promise<void> {
+    const input = this.mapPlaceToVisitedPlaceInput(place);
+    if (userId) return addUserVisitedPlace(userId, input);
+    addLocalVisitedPlace(input);
+    return Promise.resolve();
+  }
+
+  removeVisitedPlace(userId: string | undefined, placeId: string): Promise<void> {
+    if (userId) return removeUserVisitedPlace(userId, placeId);
+    removeLocalVisitedPlace(placeId);
+    return Promise.resolve();
+  }
+
+  isPlaceVisited(userId: string | undefined, placeId: string): Promise<boolean> {
+    return userId ? isUserVisitedPlace(userId, placeId) : Promise.resolve(isLocalVisitedPlace(placeId));
+  }
+
+  getVisitedPlaces(userId?: string): Promise<VisitedPlace[]> {
+    return userId ? listUserVisitedPlaces(userId) : Promise.resolve(getLocalVisitedPlaces());
   }
 
   saveSearchHistoryEntry(
@@ -457,6 +491,19 @@ export class TourismService {
     };
   }
 
+  private mapPlaceToVisitedPlaceInput(place: TourismPlace): VisitedPlaceInput {
+    const primaryImage = place.images?.[0];
+    return {
+      placeId: place.id,
+      googlePlaceId: place.googlePlaceId,
+      placeName: place.name,
+      thumbnailUrl: primaryImage?.url ?? place.imageUrl,
+      thumbnailPhotoReference: primaryImage?.photoReference,
+      district: place.districtName ?? place.address?.district,
+      state: place.address?.region,
+    };
+  }
+
   private mapPlaceToRecentlyViewedInput(
     place: TourismPlace,
     context?: PlaceSearchHistoryContext,
@@ -540,6 +587,22 @@ export async function isPlaceInWishlist(userId: string | undefined, placeId: str
 
 export async function getWishlistPlaces(userId?: string): Promise<WishlistPlace[]> {
   return tourismService.getWishlistPlaces(userId);
+}
+
+export async function addVisitedPlace(userId: string | undefined, place: TourismPlace): Promise<void> {
+  return tourismService.addVisitedPlace(userId, place);
+}
+
+export async function removeVisitedPlace(userId: string | undefined, placeId: string): Promise<void> {
+  return tourismService.removeVisitedPlace(userId, placeId);
+}
+
+export async function isPlaceVisited(userId: string | undefined, placeId: string): Promise<boolean> {
+  return tourismService.isPlaceVisited(userId, placeId);
+}
+
+export async function getVisitedPlaces(userId?: string): Promise<VisitedPlace[]> {
+  return tourismService.getVisitedPlaces(userId);
 }
 
 export async function saveSearchHistoryEntry(
