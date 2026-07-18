@@ -218,7 +218,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
 
         <PhotosGallery placeName={place.name} photos={galleryImages} />
         <PlaceReviews reviews={place.reviews} />
-        <NearbyAttractions attractions={nearbyAttractions.filter((attraction) => attraction.id !== place.id).slice(0, 6)} />
+        <NearbyPlaces attractions={nearbyAttractions.filter((attraction) => attraction.id !== place.id).slice(0, 10)} />
       </main>
     </AppShell>
   );
@@ -255,39 +255,52 @@ function PhotosGallery({ placeName, photos }: { placeName: string; photos: Galle
   );
 }
 
-function NearbyAttractions({ attractions }: { attractions: NearbyPlace[] }) {
+function NearbyPlaces({ attractions }: { attractions: NearbyPlace[] }) {
   return (
     <section className="space-y-4">
       <SectionHeader
         eyebrow="Nearby"
-        title="Nearby attractions"
+        title="Nearby Places"
         description="Attractions discovered with the existing nearby search service."
       />
       {attractions.length ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {attractions.map((attraction) => (
             <Card key={attraction.id} className="border-primary/10 shadow-sm">
+              <div className="relative aspect-[16/10] bg-muted">
+                {attraction.imageUrl ? (
+                  <Image
+                    src={attraction.imageUrl}
+                    alt={attraction.name}
+                    fill
+                    unoptimized={isRemoteImage(attraction.imageUrl)}
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover"
+                  />
+                ) : null}
+              </div>
               <CardContent className="flex h-full flex-col gap-3 p-4">
                 <div>
                   <h3 className="text-lg font-semibold tracking-tight">{attraction.name}</h3>
-                  {attraction.formattedAddress ? (
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{attraction.formattedAddress}</p>
-                  ) : null}
+                  <Badge variant="secondary" className="mt-2">{formatNearbyCategory(attraction.category)}</Badge>
                 </div>
                 <div className="mt-auto grid gap-2 text-sm text-muted-foreground">
                   <InfoLine
                     icon={Star}
-                    value={attraction.rating ? `${attraction.rating.toFixed(1)} (${attraction.reviewsCount ?? 0} reviews)` : "Unrated"}
+                    value={attraction.rating ? `${attraction.rating.toFixed(1)} (${attraction.reviewsCount ?? 0} reviews)` : undefined}
+                    fallback="Rating unavailable"
                   />
                   <InfoLine icon={MapPin} value={attraction.distanceText} fallback="Distance not available" />
-                  <InfoLink icon={Map} href={createNearbyGoogleMapsUrl(attraction)} label="Open in Google Maps" />
+                  <Button asChild variant="outline" className="mt-2 w-fit">
+                    <Link href={`/place/${attraction.googlePlaceId ?? attraction.id}`}>Open Details</Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
       ) : (
-        <EmptyState title="No nearby attractions found" description="There were no attraction results close to this place." />
+        <EmptyState title="No nearby places found" description="There are no nearby attractions available for this place right now." />
       )}
     </section>
   );
@@ -373,10 +386,8 @@ function createGoogleMapsUrl(place: TourismPlace, latitude?: number | null, long
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name)}`;
 }
 
-function createNearbyGoogleMapsUrl(place: NearbyPlace) {
-  const placeId = encodeURIComponent(place.googlePlaceId ?? place.id);
-
-  return `https://www.google.com/maps/search/?api=1&query=${place.coordinates.latitude},${place.coordinates.longitude}&query_place_id=${placeId}`;
+function formatNearbyCategory(category: NearbyPlace["category"]) {
+  return category.replaceAll("_", " ").replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 function isRemoteImage(src: string) {

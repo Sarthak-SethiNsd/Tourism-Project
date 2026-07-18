@@ -112,6 +112,8 @@ type PlaceSearchHistoryContext = {
 };
 
 export class TourismService {
+  private readonly nearbyPlacesCache = new Map<string, Promise<NearbyPlace[]>>();
+
   constructor(private readonly provider: TourismProvider) {}
 
   getProviderName() {
@@ -357,7 +359,18 @@ export class TourismService {
     category: NearbyPlaceCategory,
     signal?: AbortSignal,
   ): Promise<NearbyPlace[]> {
-    return this.provider.getNearbyPlaces?.(latitude, longitude, radius, category, signal) ?? Promise.resolve([]);
+    const cacheKey = [latitude, longitude, radius, category].join(":");
+    const cachedRequest = this.nearbyPlacesCache.get(cacheKey);
+
+    if (cachedRequest) {
+      return cachedRequest;
+    }
+
+    const request = this.provider.getNearbyPlaces?.(latitude, longitude, radius, category, signal) ?? Promise.resolve([]);
+    this.nearbyPlacesCache.set(cacheKey, request);
+    void request.catch(() => this.nearbyPlacesCache.delete(cacheKey));
+
+    return request;
   }
 
   listExternalPlacePhotos(placeId: string, signal?: AbortSignal): Promise<TourismPlacePhoto[]> {
