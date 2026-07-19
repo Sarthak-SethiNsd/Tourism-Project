@@ -37,6 +37,7 @@ import { AddToCollectionButton } from "@/features/collections/add-to-collection-
 import { WishlistButton } from "@/features/wishlist/wishlist-button";
 import { MarkAsVisitedButton } from "@/features/visited-places/mark-as-visited-button";
 import { createCollectionPlaceInput } from "@/features/collections/collection-place";
+import { GetDirectionsButton } from "@/features/tourism/place-details/get-directions-button";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
 type PlaceDetailsPageProps = {
@@ -139,6 +140,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
                 <SharePlaceButton placeId={place.id} placeName={place.name} address={address} />
                 <AddToTripButton place={createTripPlaceInput(place, district, region)} />
                 <AddToCollectionButton place={createCollectionPlaceInput(place, district, region)} />
+                {hasCoordinates ? <GetDirectionsButton destination={{ latitude, longitude }} placeName={place.name} /> : <GetDirectionsButton placeName={place.name} />}
               </div>
 
               <div className="grid gap-3 text-sm text-muted-foreground">

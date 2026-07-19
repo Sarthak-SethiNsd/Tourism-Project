@@ -113,6 +113,7 @@ type PlaceSearchHistoryContext = {
 
 export class TourismService {
   private readonly nearbyPlacesCache = new Map<string, Promise<NearbyPlace[]>>();
+  private readonly travelInfoCache = new Map<string, Promise<TravelInfo>>();
 
   constructor(private readonly provider: TourismProvider) {}
 
@@ -422,7 +423,14 @@ export class TourismService {
     travelMode: TravelMode,
     signal?: AbortSignal,
   ): Promise<TravelInfo> {
-    return (
+    const cacheKey = [formatRouteLocation(origin), formatRouteLocation(destination), travelMode].join(":");
+    const cachedRequest = this.travelInfoCache.get(cacheKey);
+
+    if (cachedRequest) {
+      return cachedRequest;
+    }
+
+    const request =
       this.provider.getTravelInfo?.(origin, destination, travelMode, signal) ??
       Promise.resolve({
         distanceMeters: null,
@@ -432,8 +440,11 @@ export class TourismService {
         travelMode,
         status: "not_implemented",
         estimated: false,
-      })
-    );
+      });
+    this.travelInfoCache.set(cacheKey, request);
+    void request.catch(() => this.travelInfoCache.delete(cacheKey));
+
+    return request;
   }
 
   getRouteSummary(request: TourismRouteRequest): Promise<TourismRouteSummary | null> {
@@ -553,6 +564,10 @@ export class TourismService {
 }
 
 export const tourismService = new TourismService(activeTourismProvider);
+
+function formatRouteLocation(location: TourismGeoPoint | string) {
+  return typeof location === "string" ? location.trim().toLowerCase() : `${location.latitude},${location.longitude}`;
+}
 
 export async function listTourismCategories(): Promise<TourismCategory[]> {
   return tourismService.listCategories();
