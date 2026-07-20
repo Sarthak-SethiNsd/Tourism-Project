@@ -38,6 +38,7 @@ import { WishlistButton } from "@/features/wishlist/wishlist-button";
 import { MarkAsVisitedButton } from "@/features/visited-places/mark-as-visited-button";
 import { createCollectionPlaceInput } from "@/features/collections/collection-place";
 import { GetDirectionsButton } from "@/features/tourism/place-details/get-directions-button";
+import { CurrentWeather } from "@/features/tourism/place-details/current-weather";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
 type PlaceDetailsPageProps = {
@@ -167,6 +168,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
               ) : null}
             </CardContent>
           </Card>
+
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[1fr_360px]">
@@ -218,6 +220,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
           </Card>
         </section>
 
+        <CurrentWeather latitude={latitude} longitude={longitude} />
         <PhotosGallery placeName={place.name} photos={galleryImages} />
         <PlaceReviews reviews={place.reviews} />
         <NearbyPlaces attractions={nearbyAttractions.filter((attraction) => attraction.id !== place.id).slice(0, 10)} />

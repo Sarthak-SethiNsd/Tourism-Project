@@ -87,6 +87,7 @@ import {
 import type {
   AutocompleteOptions,
   AutocompleteSuggestion,
+  CurrentWeather,
   GeocodeOptions,
   GeocodeResult,
   NearbyPlace,
@@ -114,6 +115,7 @@ type PlaceSearchHistoryContext = {
 export class TourismService {
   private readonly nearbyPlacesCache = new Map<string, Promise<NearbyPlace[]>>();
   private readonly travelInfoCache = new Map<string, Promise<TravelInfo>>();
+  private readonly weatherCache = new Map<string, { expiresAt: number; request: Promise<CurrentWeather | null> }>();
 
   constructor(private readonly provider: TourismProvider) {}
 
@@ -447,6 +449,21 @@ export class TourismService {
     return request;
   }
 
+  getCurrentWeather(latitude: number, longitude: number): Promise<CurrentWeather | null> {
+    const cacheKey = `${latitude},${longitude}`;
+    const cachedWeather = this.weatherCache.get(cacheKey);
+
+    if (cachedWeather && cachedWeather.expiresAt > Date.now()) {
+      return cachedWeather.request;
+    }
+
+    const request = fetchCurrentWeather(latitude, longitude);
+    this.weatherCache.set(cacheKey, { request, expiresAt: Date.now() + 10 * 60 * 1000 });
+    void request.catch(() => this.weatherCache.delete(cacheKey));
+
+    return request;
+  }
+
   getRouteSummary(request: TourismRouteRequest): Promise<TourismRouteSummary | null> {
     return this.provider.getRouteSummary(request);
   }
@@ -567,6 +584,60 @@ export const tourismService = new TourismService(activeTourismProvider);
 
 function formatRouteLocation(location: TourismGeoPoint | string) {
   return typeof location === "string" ? location.trim().toLowerCase() : `${location.latitude},${location.longitude}`;
+}
+
+type OpenMeteoWeatherResponse = {
+  current?: {
+    time?: string;
+    temperature_2m?: number;
+    apparent_temperature?: number;
+    relative_humidity_2m?: number;
+    wind_speed_10m?: number;
+    weather_code?: number;
+  };
+};
+
+async function fetchCurrentWeather(latitude: number, longitude: number): Promise<CurrentWeather | null> {
+  const searchParams = new URLSearchParams({
+    latitude: String(latitude),
+    longitude: String(longitude),
+    current: "temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code",
+    timezone: "auto",
+  });
+
+  try {
+    const response = await fetch(`https://api.open-meteo.com/v1/forecast?${searchParams.toString()}`);
+    if (!response.ok) return null;
+    const current = ((await response.json()) as OpenMeteoWeatherResponse).current;
+    if (!current || !hasCurrentWeatherValues(current)) return null;
+    return {
+      temperatureCelsius: current.temperature_2m,
+      feelsLikeCelsius: current.apparent_temperature,
+      humidityPercent: current.relative_humidity_2m,
+      windSpeedKph: current.wind_speed_10m,
+      weatherCode: current.weather_code,
+      condition: getWeatherCondition(current.weather_code),
+      updatedAt: current.time ? new Date(current.time) : new Date(),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function hasCurrentWeatherValues(current: NonNullable<OpenMeteoWeatherResponse["current"]>): current is Required<NonNullable<OpenMeteoWeatherResponse["current"]>> {
+  return [current.temperature_2m, current.apparent_temperature, current.relative_humidity_2m, current.wind_speed_10m, current.weather_code].every((value) => typeof value === "number");
+}
+
+function getWeatherCondition(weatherCode: number) {
+  if (weatherCode === 0) return "Sunny";
+  if ([1, 2].includes(weatherCode)) return "Partly cloudy";
+  if (weatherCode === 3) return "Cloudy";
+  if ([45, 48].includes(weatherCode)) return "Foggy";
+  if ([51, 53, 55, 56, 57].includes(weatherCode)) return "Drizzle";
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(weatherCode)) return "Rainy";
+  if ([71, 73, 75, 77, 85, 86].includes(weatherCode)) return "Snowy";
+  if ([95, 96, 99].includes(weatherCode)) return "Thunderstorms";
+  return "Weather unavailable";
 }
 
 export async function listTourismCategories(): Promise<TourismCategory[]> {
@@ -745,6 +816,10 @@ export async function getNearbyTourismPlaces(
   signal?: AbortSignal,
 ): Promise<NearbyPlace[]> {
   return tourismService.getNearbyPlaces(latitude, longitude, radius, category, signal);
+}
+
+export async function getCurrentTourismWeather(latitude: number, longitude: number): Promise<CurrentWeather | null> {
+  return tourismService.getCurrentWeather(latitude, longitude);
 }
 
 export async function listExternalTourismPlacePhotos(

@@ -41,6 +41,16 @@ export type TimeZoneResult = {
   source: "google";
 };
 
+export type CurrentWeather = {
+  temperatureCelsius: number;
+  condition: string;
+  weatherCode: number;
+  feelsLikeCelsius: number;
+  humidityPercent: number;
+  windSpeedKph: number;
+  updatedAt: Date;
+};
+
 export type TourismPlacePhoto = {
   url: string;
   attribution?: string;
