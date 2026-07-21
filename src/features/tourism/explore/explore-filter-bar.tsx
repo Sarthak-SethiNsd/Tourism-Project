@@ -1,6 +1,6 @@
 "use client";
 
-import { SlidersHorizontal, X } from "lucide-react";
+import { LocateFixed, SlidersHorizontal, X } from "lucide-react";
 import type { IndianDistrict, IndianRegion, TourismCategory, TourismPriceLevel } from "@/features/tourism/types";
 import { SearchInput } from "@/components/shared/search-input";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,13 @@ export type ExploreFilterState = {
   districtId: string;
   categoryId: string;
   priceLevel: "" | TourismPriceLevel;
+  minimumRating: "" | "3" | "4" | "4.5";
+  currentlyOpen: boolean;
+  maxDistanceKm: "" | "10" | "50" | "100";
+  visited: boolean;
+  wishlist: boolean;
+  saved: boolean;
+  sortBy: "rating" | "distance" | "popularity" | "recently-added" | "alphabetical";
 };
 
 type ExploreFilterBarProps = {
@@ -23,6 +30,9 @@ type ExploreFilterBarProps = {
   resultCount: number;
   onFiltersChange: (filters: ExploreFilterState) => void;
   onClear: () => void;
+  hasLocation: boolean;
+  locationMessage?: string;
+  onRequestLocation: () => void;
 };
 
 const allValue = "all";
@@ -34,6 +44,12 @@ const priceOptions: Array<{ label: string; value: TourismPriceLevel }> = [
   { label: "Premium", value: "premium" },
 ];
 
+const ratingOptions: Array<{ label: string; value: ExploreFilterState["minimumRating"] }> = [
+  { label: "3.0+ rating", value: "3" },
+  { label: "4.0+ rating", value: "4" },
+  { label: "4.5+ rating", value: "4.5" },
+];
+
 export function ExploreFilterBar({
   filters,
   regions,
@@ -42,6 +58,9 @@ export function ExploreFilterBar({
   resultCount,
   onFiltersChange,
   onClear,
+  hasLocation,
+  locationMessage,
+  onRequestLocation,
 }: ExploreFilterBarProps) {
   function updateFilter(nextFilters: Partial<ExploreFilterState>) {
     onFiltersChange({ ...filters, ...nextFilters });
@@ -141,6 +160,47 @@ export function ExploreFilterBar({
               </SelectContent>
             </Select>
           </div>
+
+          <div className="space-y-2">
+            <Label>Rating</Label>
+            <Select value={filters.minimumRating || allValue} onValueChange={(value) => updateFilter({ minimumRating: value === allValue ? "" : value as ExploreFilterState["minimumRating"] })}>
+              <SelectTrigger className="min-h-12 min-w-36 rounded-lg bg-background"><SelectValue placeholder="Any rating" /></SelectTrigger>
+              <SelectContent><SelectItem value={allValue}>Any rating</SelectItem>{ratingOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Open now</Label>
+            <Select value={filters.currentlyOpen ? "open" : allValue} onValueChange={(value) => updateFilter({ currentlyOpen: value === "open" })}>
+              <SelectTrigger className="min-h-12 min-w-36 rounded-lg bg-background"><SelectValue placeholder="Any hours" /></SelectTrigger>
+              <SelectContent><SelectItem value={allValue}>Any hours</SelectItem><SelectItem value="open">Currently open</SelectItem></SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Distance</Label>
+            <Select value={filters.maxDistanceKm || allValue} onValueChange={(value) => { updateFilter({ maxDistanceKm: value === allValue ? "" : value as ExploreFilterState["maxDistanceKm"] }); if (value !== allValue && !hasLocation) onRequestLocation(); }}>
+              <SelectTrigger className="min-h-12 min-w-36 rounded-lg bg-background"><SelectValue placeholder="Any distance" /></SelectTrigger>
+              <SelectContent><SelectItem value={allValue}>Any distance</SelectItem><SelectItem value="10">Within 10 km</SelectItem><SelectItem value="50">Within 50 km</SelectItem><SelectItem value="100">Within 100 km</SelectItem></SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>My places</Label>
+            <div className="flex min-h-12 flex-wrap gap-2 rounded-lg border bg-background p-1.5">
+              <Button type="button" size="sm" variant={filters.visited ? "secondary" : "ghost"} onClick={() => updateFilter({ visited: !filters.visited })}>Visited</Button>
+              <Button type="button" size="sm" variant={filters.wishlist ? "secondary" : "ghost"} onClick={() => updateFilter({ wishlist: !filters.wishlist })}>Wishlist</Button>
+              <Button type="button" size="sm" variant={filters.saved ? "secondary" : "ghost"} onClick={() => updateFilter({ saved: !filters.saved })}>Saved</Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Sort by</Label>
+            <Select value={filters.sortBy} onValueChange={(value) => { updateFilter({ sortBy: value as ExploreFilterState["sortBy"] }); if (value === "distance" && !hasLocation) onRequestLocation(); }}>
+              <SelectTrigger className="min-h-12 min-w-40 rounded-lg bg-background"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="rating">Rating</SelectItem><SelectItem value="distance">Distance</SelectItem><SelectItem value="popularity">Popularity</SelectItem><SelectItem value="recently-added">Recently added</SelectItem><SelectItem value="alphabetical">Alphabetical (A–Z)</SelectItem></SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -149,11 +209,9 @@ export function ExploreFilterBar({
           <SlidersHorizontal className="size-4" aria-hidden />
           {resultCount} matching {resultCount === 1 ? "place" : "places"}
         </p>
-        <Button type="button" variant="ghost" className="min-h-10 rounded-lg" onClick={onClear}>
-          <X className="size-4" aria-hidden />
-          Clear filters
-        </Button>
+        <div className="flex flex-wrap gap-2"><Button type="button" variant="outline" className="min-h-10 rounded-lg" onClick={onRequestLocation}><LocateFixed className="size-4" aria-hidden />{hasLocation ? "Location ready" : "Use my location"}</Button><Button type="button" variant="ghost" className="min-h-10 rounded-lg" onClick={onClear}><X className="size-4" aria-hidden />Clear filters</Button></div>
       </div>
+      {locationMessage ? <p className="mt-3 text-sm text-muted-foreground">{locationMessage}</p> : null}
     </section>
   );
 }

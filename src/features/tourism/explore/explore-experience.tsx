@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Compass, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { EmptyState } from "@/components/shared/empty-state";
 import { SectionHeader } from "@/components/shared/section-header";
@@ -16,7 +16,8 @@ import { ExploreFilterBar, type ExploreFilterState } from "@/features/tourism/ex
 import { PlaceCard } from "@/features/tourism/explore/place-card";
 import { hasFirebaseConfig } from "@/config/firebase";
 import { useAuthUser } from "@/features/authentication/hooks/use-auth-user";
-import { saveSearchHistoryEntry } from "@/features/tourism/services/tourism-service";
+import { getSavedPlaces, getVisitedPlaces, getWishlistPlaces, saveSearchHistoryEntry } from "@/features/tourism/services/tourism-service";
+import { getStoredExploreFilters, storeExploreFilters } from "@/features/tourism/explore/advanced-search-storage";
 
 type ExploreExperienceProps = {
   places: TourismPlace[];
@@ -31,6 +32,13 @@ const defaultFilters: ExploreFilterState = {
   districtId: "",
   categoryId: "",
   priceLevel: "",
+  minimumRating: "",
+  currentlyOpen: false,
+  maxDistanceKm: "",
+  visited: false,
+  wishlist: false,
+  saved: false,
+  sortBy: "rating",
 };
 
 function countPlacesByCategory(places: TourismPlace[], categoryId: string) {
@@ -49,24 +57,69 @@ function buildDistrictMap(districts: IndianDistrict[]) {
 
 export function ExploreExperience({ places, categories, regions, initialFilters }: ExploreExperienceProps) {
   const [filters, setFilters] = useState<ExploreFilterState>({ ...defaultFilters, ...initialFilters });
+  const [hasRestoredFilters, setHasRestoredFilters] = useState(false);
+  const [visitedPlaceIds, setVisitedPlaceIds] = useState<Set<string>>(new Set());
+  const [wishlistPlaceIds, setWishlistPlaceIds] = useState<Set<string>>(new Set());
+  const [savedPlaceIds, setSavedPlaceIds] = useState<Set<string>>(new Set());
+  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [locationMessage, setLocationMessage] = useState<string | undefined>();
   const { districts } = useDistrictsByRegion(filters.stateId || undefined);
-  const { user } = useAuthUser();
+  const { user, isReady } = useAuthUser();
 
   const regionById = useMemo(() => new Map(regions.map((region) => [region.id, region])), [regions]);
   const districtById = useMemo(() => buildDistrictMap(districts), [districts]);
 
   const featuredPlaces = useMemo(() => places.filter((place) => place.isFeatured), [places]);
-  const filteredPlaces = useMemo(
-    () =>
-      filterTourismPlaces(places, {
+  useEffect(() => {
+    setFilters((currentFilters) => ({ ...currentFilters, ...getStoredExploreFilters() }));
+    setHasRestoredFilters(true);
+  }, []);
+
+  useEffect(() => {
+    if (hasRestoredFilters) storeExploreFilters(filters);
+  }, [filters, hasRestoredFilters]);
+
+  useEffect(() => {
+    let isActive = true;
+    async function loadPlaceLists() {
+      if (!isReady) return;
+      try {
+        const [visited, wishlist, saved] = await Promise.all([
+          getVisitedPlaces(user?.uid),
+          getWishlistPlaces(user?.uid),
+          user ? getSavedPlaces(user.uid) : Promise.resolve([]),
+        ]);
+        if (isActive) {
+          setVisitedPlaceIds(new Set(visited.map((place) => place.placeId)));
+          setWishlistPlaceIds(new Set(wishlist.map((place) => place.placeId)));
+          setSavedPlaceIds(new Set(saved.map((place) => place.placeId)));
+        }
+      } catch {
+        if (isActive) setLocationMessage("Some account-based filters are unavailable right now.");
+      }
+    }
+    void loadPlaceLists();
+    return () => { isActive = false; };
+  }, [isReady, user]);
+
+  const filteredPlaces = useMemo(() => {
+    const matchingPlaces = filterTourismPlaces(places, {
         query: filters.query,
         stateId: filters.stateId || undefined,
         districtId: filters.districtId || undefined,
         categoryId: filters.categoryId || undefined,
         priceLevel: filters.priceLevel || undefined,
-      }),
-    [filters, places],
-  );
+      }).filter((place) => {
+        const distanceKm = location ? getDistanceKm(location, place.coordinates) : undefined;
+        return (!filters.minimumRating || place.rating >= Number(filters.minimumRating)) &&
+          (!filters.currentlyOpen || place.openingHours?.openNow === true) &&
+          (!filters.maxDistanceKm || !location || (distanceKm !== undefined && distanceKm <= Number(filters.maxDistanceKm))) &&
+          (!filters.visited || visitedPlaceIds.has(place.id)) &&
+          (!filters.wishlist || wishlistPlaceIds.has(place.id)) &&
+          (!filters.saved || savedPlaceIds.has(place.id));
+      });
+    return sortPlaces(matchingPlaces, filters.sortBy, location, places);
+  }, [filters, location, places, savedPlaceIds, visitedPlaceIds, wishlistPlaceIds]);
 
   function handleCategorySelect(categoryId: string) {
     setFilters((currentFilters) => ({
@@ -77,6 +130,19 @@ export function ExploreExperience({ places, categories, regions, initialFilters 
 
   function clearFilters() {
     setFilters(defaultFilters);
+  }
+
+  function requestLocation() {
+    if (!navigator.geolocation) {
+      setLocationMessage("Location is not supported by this browser. Distance filters are unavailable.");
+      return;
+    }
+    setLocationMessage("Getting your location for distance filtering…");
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => { setLocation({ latitude: coords.latitude, longitude: coords.longitude }); setLocationMessage("Distance filters and sorting now use your current location."); },
+      () => setLocationMessage("Your location is unavailable. You can still use the other filters."),
+      { enableHighAccuracy: false, maximumAge: 300000, timeout: 10000 },
+    );
   }
 
   function handlePlaceOpen(place: TourismPlace) {
@@ -190,6 +256,9 @@ export function ExploreExperience({ places, categories, regions, initialFilters 
           resultCount={filteredPlaces.length}
           onFiltersChange={setFilters}
           onClear={clearFilters}
+          hasLocation={Boolean(location)}
+          locationMessage={locationMessage}
+          onRequestLocation={requestLocation}
         />
 
         <section className="space-y-4">
@@ -218,4 +287,24 @@ export function ExploreExperience({ places, categories, regions, initialFilters 
       </main>
     </AppShell>
   );
+}
+
+function sortPlaces(places: TourismPlace[], sortBy: ExploreFilterState["sortBy"], location: { latitude: number; longitude: number } | null, sourcePlaces: TourismPlace[]) {
+  const sourcePosition = new Map(sourcePlaces.map((place, index) => [place.id, index]));
+  return [...places].sort((left, right) => {
+    if (sortBy === "alphabetical") return left.name.localeCompare(right.name);
+    if (sortBy === "popularity") return (right.reviewsCount ?? 0) - (left.reviewsCount ?? 0);
+    if (sortBy === "recently-added") return (sourcePosition.get(right.id) ?? 0) - (sourcePosition.get(left.id) ?? 0);
+    if (sortBy === "distance" && location) return (getDistanceKm(location, left.coordinates) ?? Infinity) - (getDistanceKm(location, right.coordinates) ?? Infinity);
+    return right.rating - left.rating;
+  });
+}
+
+function getDistanceKm(origin: { latitude: number; longitude: number }, destination?: TourismPlace["coordinates"]) {
+  if (!destination || typeof destination.latitude !== "number" || typeof destination.longitude !== "number") return undefined;
+  const toRadians = (value: number) => value * Math.PI / 180;
+  const latitudeDelta = toRadians(destination.latitude - origin.latitude);
+  const longitudeDelta = toRadians(destination.longitude - origin.longitude);
+  const calculation = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(toRadians(origin.latitude)) * Math.cos(toRadians(destination.latitude)) * Math.sin(longitudeDelta / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(calculation), Math.sqrt(1 - calculation));
 }
