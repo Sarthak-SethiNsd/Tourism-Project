@@ -188,9 +188,9 @@ export function ExploreFilterBar({
           <div className="space-y-2">
             <Label>My places</Label>
             <div className="flex min-h-12 flex-wrap gap-2 rounded-lg border bg-background p-1.5">
-              <Button type="button" size="sm" variant={filters.visited ? "secondary" : "ghost"} onClick={() => updateFilter({ visited: !filters.visited })}>Visited</Button>
-              <Button type="button" size="sm" variant={filters.wishlist ? "secondary" : "ghost"} onClick={() => updateFilter({ wishlist: !filters.wishlist })}>Wishlist</Button>
-              <Button type="button" size="sm" variant={filters.saved ? "secondary" : "ghost"} onClick={() => updateFilter({ saved: !filters.saved })}>Saved</Button>
+              <Button type="button" size="sm" className="min-h-10" variant={filters.visited ? "secondary" : "ghost"} onClick={() => updateFilter({ visited: !filters.visited })}>Visited</Button>
+              <Button type="button" size="sm" className="min-h-10" variant={filters.wishlist ? "secondary" : "ghost"} onClick={() => updateFilter({ wishlist: !filters.wishlist })}>Wishlist</Button>
+              <Button type="button" size="sm" className="min-h-10" variant={filters.saved ? "secondary" : "ghost"} onClick={() => updateFilter({ saved: !filters.saved })}>Saved</Button>
             </div>
           </div>
 
