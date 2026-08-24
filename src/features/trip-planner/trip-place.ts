@@ -6,7 +6,7 @@ export function createTripPlaceInput(place: TourismPlace, district?: IndianDistr
 
   return {
     placeId: place.id,
-    googlePlaceId: place.googlePlaceId,
+    mapplsPlaceId: place.mapplsPlaceId,
     placeName: place.name,
     thumbnailUrl: primaryImage?.url ?? place.imageUrl,
     thumbnailPhotoReference: primaryImage?.photoReference,

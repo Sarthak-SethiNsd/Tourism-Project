@@ -2,7 +2,7 @@ import type { EntityId } from "@/types/common";
 
 export type TripPlaceInput = {
   placeId: EntityId;
-  googlePlaceId?: EntityId;
+  mapplsPlaceId?: EntityId;
   placeName: string;
   thumbnailUrl?: string;
   thumbnailPhotoReference?: string;

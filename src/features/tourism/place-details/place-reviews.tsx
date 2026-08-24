@@ -23,7 +23,7 @@ export function PlaceReviews({ reviews = [] }: PlaceReviewsProps) {
 
   return (
     <section className="space-y-4">
-      <SectionHeader eyebrow="Reviews" title="Google reviews" />
+      <SectionHeader eyebrow="Reviews" title="Reviews" />
       {reviews.length ? (
         <div className="grid gap-4">
           {visibleReviews.map((review) => (

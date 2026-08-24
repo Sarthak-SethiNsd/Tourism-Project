@@ -1,16 +1,16 @@
-const GOOGLE_RETRY_STATUS_CODES = new Set([429, 500, 502, 503, 504]);
-const GOOGLE_RETRY_BACKOFF_MS = [500, 1000, 2000] as const;
+const MAPPLS_RETRY_STATUS_CODES = new Set([429, 500, 502, 503, 504]);
+const MAPPLS_RETRY_BACKOFF_MS = [500, 1000, 2000] as const;
 
-type GoogleFetchInit = RequestInit & {
+type MapplsFetchInit = RequestInit & {
   next?: {
     revalidate?: number;
   };
 };
 
-export async function fetchGoogleApi(input: RequestInfo | URL, init?: GoogleFetchInit): Promise<Response | undefined> {
+export async function fetchMapplsApi(input: RequestInfo | URL, init?: MapplsFetchInit): Promise<Response | undefined> {
   const signal = init?.signal ?? undefined;
 
-  for (let attempt = 0; attempt <= GOOGLE_RETRY_BACKOFF_MS.length; attempt += 1) {
+  for (let attempt = 0; attempt <= MAPPLS_RETRY_BACKOFF_MS.length; attempt += 1) {
     if (signal?.aborted) {
       return undefined;
     }
@@ -18,7 +18,7 @@ export async function fetchGoogleApi(input: RequestInfo | URL, init?: GoogleFetc
     try {
       const response = await fetch(input, init);
 
-      if (!shouldRetryGoogleResponse(response) || attempt === GOOGLE_RETRY_BACKOFF_MS.length) {
+      if (!shouldRetryMapplsResponse(response) || attempt === MAPPLS_RETRY_BACKOFF_MS.length) {
         return response;
       }
     } catch (error) {
@@ -26,23 +26,23 @@ export async function fetchGoogleApi(input: RequestInfo | URL, init?: GoogleFetc
         return undefined;
       }
 
-      if (attempt === GOOGLE_RETRY_BACKOFF_MS.length) {
+      if (attempt === MAPPLS_RETRY_BACKOFF_MS.length) {
         throw error;
       }
     }
 
-    const canContinue = await waitForRetryBackoff(GOOGLE_RETRY_BACKOFF_MS[attempt], signal);
+    const canContinue = await waitForRetryBackoff(MAPPLS_RETRY_BACKOFF_MS[attempt], signal);
 
     if (!canContinue) {
       return undefined;
     }
   }
 
-  throw new Error("Google API request failed after retries.");
+  throw new Error("Mappls API request failed after retries.");
 }
 
-function shouldRetryGoogleResponse(response: Response) {
-  return GOOGLE_RETRY_STATUS_CODES.has(response.status);
+function shouldRetryMapplsResponse(response: Response) {
+  return MAPPLS_RETRY_STATUS_CODES.has(response.status);
 }
 
 function isAbortError(error: unknown) {

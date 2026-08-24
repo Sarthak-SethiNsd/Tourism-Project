@@ -76,7 +76,7 @@ function mapRecentlyViewedDocument(snapshot: QueryDocumentSnapshot<DocumentData>
 
   return {
     placeId: data.placeId ?? snapshot.id,
-    googlePlaceId: data.googlePlaceId,
+    mapplsPlaceId: data.mapplsPlaceId,
     placeName: data.placeName ?? "Recently viewed place",
     thumbnailPhotoReference: data.thumbnailPhotoReference,
     thumbnailUrl: data.thumbnailUrl,

@@ -1,1 +1,7 @@
-export { signInWithGoogle, signOutCurrentUser, subscribeToAuthState } from "@/services/firebase/auth-service";
+export {
+  signInWithEmail,
+  signInWithGoogle,
+  signOutCurrentUser,
+  signUpWithEmail,
+  subscribeToAuthState,
+} from "@/services/firebase/auth-service";

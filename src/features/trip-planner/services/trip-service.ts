@@ -91,7 +91,7 @@ function mapTripDocument(snapshot: QueryDocumentSnapshot<DocumentData>): Trip {
     notes: data.notes,
     places: (data.places ?? []).map((place) => ({
       placeId: place.placeId,
-      googlePlaceId: place.googlePlaceId,
+      mapplsPlaceId: place.mapplsPlaceId,
       placeName: place.placeName,
       thumbnailUrl: place.thumbnailUrl,
       thumbnailPhotoReference: place.thumbnailPhotoReference,

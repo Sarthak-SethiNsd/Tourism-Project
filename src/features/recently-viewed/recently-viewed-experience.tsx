@@ -191,7 +191,7 @@ function RecentlyViewedCard({
           <AddToCollectionButton
             place={{
               placeId: place.placeId,
-              googlePlaceId: place.googlePlaceId,
+              mapplsPlaceId: place.mapplsPlaceId,
               placeName: place.placeName,
               thumbnailUrl: place.thumbnailUrl,
               thumbnailPhotoReference: place.thumbnailPhotoReference,

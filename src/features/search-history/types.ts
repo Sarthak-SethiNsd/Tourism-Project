@@ -2,7 +2,7 @@ import type { EntityId } from "@/types/common";
 
 export type SearchHistoryInput = {
   placeId: EntityId;
-  googlePlaceId?: EntityId;
+  mapplsPlaceId?: EntityId;
   placeName: string;
   district?: string;
   state?: string;

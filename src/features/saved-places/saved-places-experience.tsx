@@ -232,7 +232,7 @@ function SavedPlaceCard({
             className="w-fit"
             place={{
               placeId: place.placeId,
-              googlePlaceId: place.googlePlaceId,
+              mapplsPlaceId: place.mapplsPlaceId,
               placeName: place.name,
               thumbnailUrl: place.photoUrl,
               thumbnailPhotoReference: place.photoReference,
@@ -244,7 +244,7 @@ function SavedPlaceCard({
             className="w-fit"
             place={{
               placeId: place.placeId,
-              googlePlaceId: place.googlePlaceId,
+              mapplsPlaceId: place.mapplsPlaceId,
               placeName: place.name,
               thumbnailUrl: place.photoUrl,
               thumbnailPhotoReference: place.photoReference,

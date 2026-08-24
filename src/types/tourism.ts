@@ -24,7 +24,7 @@ export type TourismPlaceImage = {
   attribution?: string;
   width?: number;
   height?: number;
-  source?: "local" | "google" | "partner" | "user";
+  source?: "local" | "mappls" | "partner" | "user";
 };
 
 export type TourismOpeningPeriod = {
@@ -75,7 +75,7 @@ export type TourismPlaceReview = {
 export type TourismPlace = {
   id: EntityId;
   name: string;
-  googlePlaceId?: string;
+  mapplsPlaceId?: string;
   stateId: EntityId;
   districtId: EntityId;
   districtName?: string;

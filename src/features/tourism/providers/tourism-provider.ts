@@ -1,15 +1,15 @@
-import type { GoogleTravelMode } from "@/features/tourism/providers/google-tourism-constants";
+import type { MapplsTravelMode } from "@/features/tourism/providers/mappls-tourism-constants";
 import type { IndianDistrict, IndianRegion } from "@/features/tourism/types/region";
 import type { TourismCategory, TourismLocationFilter, TourismOpeningHours, TourismPlace } from "@/types/tourism";
 
-export type TourismProviderName = "local" | "google";
+export type TourismProviderName = "local" | "mappls";
 
 export type TourismGeoPoint = {
   latitude: number;
   longitude: number;
 };
 
-export type TravelMode = GoogleTravelMode;
+export type TravelMode = MapplsTravelMode;
 
 export type TourismRouteRequest = {
   origin: TourismGeoPoint | string;
@@ -38,7 +38,7 @@ export type TimeZoneResult = {
   rawOffset: number;
   dstOffset: number;
   localTimestamp: number;
-  source: "google";
+  source: "mappls";
 };
 
 export type CurrentWeather = {
@@ -75,7 +75,7 @@ export type GeocodeResult = {
   viewport?: GeocodeViewport;
   addressComponents: GeocodeAddressComponent[];
   types: string[];
-  source: "google";
+  source: "mappls";
 };
 
 export type GeocodeComponents = Record<string, string | string[]>;
@@ -130,7 +130,7 @@ export type AutocompleteSuggestion = {
   fullText: string;
   types: string[];
   distanceMeters?: number;
-  source: "google";
+  source: "mappls";
 };
 
 export type NearbyPlaceCategory =
@@ -152,7 +152,7 @@ export type NearbyPlaceCategory =
 
 export type NearbyPlace = {
   id: string;
-  googlePlaceId?: string;
+  mapplsPlaceId?: string;
   name: string;
   category: NearbyPlaceCategory;
   formattedAddress?: string;

@@ -10,7 +10,7 @@ export type SavedPlaceLocation = {
 
 export type SavePlaceInput = {
   placeId: EntityId;
-  googlePlaceId?: EntityId;
+  mapplsPlaceId?: EntityId;
   name: string;
   photoUrl?: string;
   photoReference?: string;
@@ -21,7 +21,7 @@ export type SavedPlace = TimestampFields & {
   id: EntityId;
   userId: EntityId;
   placeId: EntityId;
-  googlePlaceId?: EntityId;
+  mapplsPlaceId?: EntityId;
   name: string;
   photoUrl?: string;
   photoReference?: string;

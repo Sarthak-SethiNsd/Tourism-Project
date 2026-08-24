@@ -41,7 +41,7 @@ export async function saveUserSearchHistoryEntry(userId: string, input: SearchHi
     getUserSearchHistoryCollectionRef(userId),
     removeUndefinedValues({
       placeId: input.placeId,
-      googlePlaceId: input.googlePlaceId,
+      mapplsPlaceId: input.mapplsPlaceId,
       placeName: input.placeName,
       district: input.district,
       state: input.state,
@@ -93,7 +93,7 @@ function mapSearchHistoryDocument(userId: string, snapshot: QueryDocumentSnapsho
     id: snapshot.id,
     userId,
     placeId: data.placeId ?? "",
-    googlePlaceId: data.googlePlaceId,
+    mapplsPlaceId: data.mapplsPlaceId,
     placeName: data.placeName ?? "Searched place",
     district: data.district,
     state: data.state,

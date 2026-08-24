@@ -2,7 +2,7 @@ import type { EntityId } from "@/types/common";
 
 export type RecentlyViewedPlaceInput = {
   placeId: EntityId;
-  googlePlaceId?: EntityId;
+  mapplsPlaceId?: EntityId;
   placeName: string;
   thumbnailPhotoReference?: string;
   thumbnailUrl?: string;

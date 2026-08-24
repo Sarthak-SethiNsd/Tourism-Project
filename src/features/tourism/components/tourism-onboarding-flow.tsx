@@ -9,6 +9,7 @@ import { onboardingCopy, type SelectOption } from "@/config/tourism";
 import { routes } from "@/config/routes";
 import { DistrictDropdown } from "@/features/tourism/components/district-dropdown";
 import { StateDropdown } from "@/features/tourism/components/state-dropdown";
+import { signInWithGoogle } from "@/features/authentication/services/authentication-service";
 import { useDistrictsByRegion } from "@/features/tourism/hooks/use-districts-by-region";
 import { useIndianRegions } from "@/features/tourism/hooks/use-indian-regions";
 import { buildExploreSearchParams } from "@/features/tourism/utils/explore-navigation";
@@ -30,14 +31,20 @@ const transition = {
   exit: { opacity: 0, y: -12 },
 };
 
-export function TourismOnboardingFlow() {
+type TourismOnboardingFlowProps = {
+  initialStep?: OnboardingStep;
+};
+
+export function TourismOnboardingFlow({ initialStep = "splash" }: TourismOnboardingFlowProps) {
   const router = useRouter();
   const { regions, status: regionsStatus } = useIndianRegions();
-  const [step, setStep] = useState<OnboardingStep>("splash");
+  const [step, setStep] = useState<OnboardingStep>(initialStep);
   const [selectedState, setSelectedState] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [entireStateSelected, setEntireStateSelected] = useState(false);
   const [recentStates, setRecentStates] = useState<SelectOption[]>([]);
+  const [isSigningInWithGoogle, setIsSigningInWithGoogle] = useState(false);
+  const [authenticationError, setAuthenticationError] = useState<string | null>(null);
 
   const { districts, status: districtsStatus } = useDistrictsByRegion(selectedState || undefined);
 
@@ -85,6 +92,20 @@ export function TourismOnboardingFlow() {
     });
 
     router.push(`${routes.explore}?${searchParams.toString()}`);
+  }
+
+  async function handleGoogleSignIn() {
+    setAuthenticationError(null);
+    setIsSigningInWithGoogle(true);
+
+    try {
+      await signInWithGoogle();
+      goToStep("state");
+    } catch {
+      setAuthenticationError("Google sign-in was not completed. Please try again.");
+    } finally {
+      setIsSigningInWithGoogle(false);
+    }
   }
 
   return (
@@ -157,20 +178,21 @@ export function TourismOnboardingFlow() {
 
               <Card className="shadow-sm">
                 <CardContent className="grid gap-3 p-4">
-                  <PrimaryButton onClick={() => goToStep("state")} showIcon={false}>
+                  <PrimaryButton disabled={isSigningInWithGoogle} onClick={() => goToStep("state")} showIcon={false}>
                     {onboardingCopy.guestLabel}
                   </PrimaryButton>
-                  <Button type="button" variant="outline" className="min-h-12 rounded-lg" onClick={() => goToStep("state")}>
-                    {onboardingCopy.googleLabel}
+                  <Button type="button" variant="outline" className="min-h-12 rounded-lg" disabled={isSigningInWithGoogle} onClick={handleGoogleSignIn}>
+                    {isSigningInWithGoogle ? "Signing in with Google…" : onboardingCopy.googleLabel}
                   </Button>
                   <div className="grid grid-cols-2 gap-3">
-                    <Button type="button" variant="secondary" className="min-h-12 rounded-lg" onClick={() => goToStep("state")}>
+                    <Button type="button" variant="secondary" className="min-h-12 rounded-lg" disabled={isSigningInWithGoogle} onClick={() => router.push(`${routes.login}?mode=signin`)}>
                       {onboardingCopy.signInLabel}
                     </Button>
-                    <Button type="button" variant="secondary" className="min-h-12 rounded-lg" onClick={() => goToStep("state")}>
+                    <Button type="button" variant="secondary" className="min-h-12 rounded-lg" disabled={isSigningInWithGoogle} onClick={() => router.push(`${routes.login}?mode=signup`)}>
                       {onboardingCopy.signUpLabel}
                     </Button>
                   </div>
+                  {authenticationError ? <p className="text-sm text-destructive" role="alert">{authenticationError}</p> : null}
                 </CardContent>
               </Card>
             </motion.section>

@@ -1,11 +1,6 @@
 export { activeTourismProvider } from "@/features/tourism/providers/active-tourism-provider";
-export { getGoogleApiKey, hasGoogleApiKey } from "@/features/tourism/providers/google-api-config";
-export {
-  getGoogleSessionToken,
-  GoogleSessionTokenManager,
-  resetGoogleSessionToken,
-} from "@/features/tourism/providers/google-session-token-manager";
-export { googleTourismProvider, GoogleTourismProvider } from "@/features/tourism/providers/google-tourism-provider";
+export { getMapplsStaticKey, hasMapplsStaticKey } from "@/features/tourism/providers/mappls-api-config";
+export { mapplsTourismProvider, MapplsTourismProvider } from "@/features/tourism/providers/mappls-tourism-provider";
 export { localTourismProvider, LocalTourismProvider } from "@/features/tourism/providers/local-tourism-provider";
 export type {
   AutocompleteOptions,

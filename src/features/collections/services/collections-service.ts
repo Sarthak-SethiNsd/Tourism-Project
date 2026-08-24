@@ -88,7 +88,7 @@ function mapCollectionDocument(snapshot: QueryDocumentSnapshot<DocumentData>): P
     description: data.description,
     places: (data.places ?? []).map((place) => ({
       placeId: place.placeId,
-      googlePlaceId: place.googlePlaceId,
+      mapplsPlaceId: place.mapplsPlaceId,
       placeName: place.placeName,
       thumbnailUrl: place.thumbnailUrl,
       thumbnailPhotoReference: place.thumbnailPhotoReference,

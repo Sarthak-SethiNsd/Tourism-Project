@@ -25,7 +25,7 @@ export async function listUserWishlistPlaces(userId: string): Promise<WishlistPl
 
 function mapWishlistDocument(userId: string, snapshot: QueryDocumentSnapshot<DocumentData>): WishlistPlace {
   const data = snapshot.data() as Partial<WishlistDocument>;
-  return { id: snapshot.id, userId, placeId: data.placeId ?? snapshot.id, googlePlaceId: data.googlePlaceId, placeName: data.placeName ?? "Wishlist place", thumbnailUrl: data.thumbnailUrl, thumbnailPhotoReference: data.thumbnailPhotoReference, district: data.district, state: data.state, addedAt: toDate(data.addedAt), createdAt: toDate(data.createdAt), updatedAt: toDate(data.updatedAt) };
+  return { id: snapshot.id, userId, placeId: data.placeId ?? snapshot.id, mapplsPlaceId: data.mapplsPlaceId, placeName: data.placeName ?? "Wishlist place", thumbnailUrl: data.thumbnailUrl, thumbnailPhotoReference: data.thumbnailPhotoReference, district: data.district, state: data.state, addedAt: toDate(data.addedAt), createdAt: toDate(data.createdAt), updatedAt: toDate(data.updatedAt) };
 }
 
 function toDate(value: Timestamp | FieldValue | undefined) {

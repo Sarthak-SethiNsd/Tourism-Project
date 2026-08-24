@@ -20,7 +20,7 @@ import {
 
 type SavedPlaceDocument = {
   placeId: string;
-  googlePlaceId?: string;
+  mapplsPlaceId?: string;
   name: string;
   photoUrl?: string;
   photoReference?: string;
@@ -46,7 +46,7 @@ export async function saveUserPlace(userId: string, place: SavePlaceInput): Prom
     getUserSavedPlaceDocumentRef(userId, place.placeId),
     removeUndefinedValues({
       placeId: place.placeId,
-      googlePlaceId: place.googlePlaceId,
+      mapplsPlaceId: place.mapplsPlaceId,
       name: place.name,
       photoUrl: place.photoUrl,
       photoReference: place.photoReference,
@@ -82,7 +82,7 @@ function mapSavedPlaceDocument(userId: string, snapshot: QueryDocumentSnapshot<D
     id: snapshot.id,
     userId,
     placeId: data.placeId ?? snapshot.id,
-    googlePlaceId: data.googlePlaceId,
+    mapplsPlaceId: data.mapplsPlaceId,
     name: data.name ?? "Saved place",
     photoUrl: data.photoUrl,
     photoReference: data.photoReference,

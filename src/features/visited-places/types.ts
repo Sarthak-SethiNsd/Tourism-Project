@@ -2,7 +2,7 @@ import type { EntityId, TimestampFields } from "@/types/common";
 
 export type VisitedPlaceInput = {
   placeId: EntityId;
-  googlePlaceId?: EntityId;
+  mapplsPlaceId?: EntityId;
   placeName: string;
   thumbnailUrl?: string;
   thumbnailPhotoReference?: string;

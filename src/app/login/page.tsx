@@ -1,5 +1,12 @@
-import { FutureRoutePage } from "@/components/shared/future-route-page";
+import { AuthenticationExperience, type AuthenticationMode } from "@/features/authentication/authentication-experience";
 
-export default function LoginPage() {
-  return <FutureRoutePage title="Login" description="Authentication screens are prepared for a future phase." />;
+type LoginPageProps = {
+  searchParams: Promise<{ mode?: string }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const { mode } = await searchParams;
+  const initialMode: AuthenticationMode = mode === "signup" ? "signup" : "signin";
+
+  return <AuthenticationExperience initialMode={initialMode} />;
 }

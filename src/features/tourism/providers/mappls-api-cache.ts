@@ -1,16 +1,16 @@
-export type GoogleApiCacheStats = {
+export type MapplsApiCacheStats = {
   hits: number;
   misses: number;
   expired: number;
   size: number;
 };
 
-type GoogleApiCacheEntry<T> = {
+type MapplsApiCacheEntry<T> = {
   value: T;
   expiresAt: number;
 };
 
-export type GoogleApiCacheLookup<T> =
+export type MapplsApiCacheLookup<T> =
   | {
       hit: true;
       value: T;
@@ -19,15 +19,15 @@ export type GoogleApiCacheLookup<T> =
       hit: false;
     };
 
-export class GoogleApiCache {
-  private readonly entries = new Map<string, GoogleApiCacheEntry<unknown>>();
+export class MapplsApiCache {
+  private readonly entries = new Map<string, MapplsApiCacheEntry<unknown>>();
   private hits = 0;
   private misses = 0;
   private expired = 0;
 
   constructor(private readonly defaultTtlMs: number) {}
 
-  get<T>(key: string): GoogleApiCacheLookup<T> {
+  get<T>(key: string): MapplsApiCacheLookup<T> {
     const entry = this.entries.get(key);
 
     if (!entry) {
@@ -75,7 +75,7 @@ export class GoogleApiCache {
     }
   }
 
-  getStats(): GoogleApiCacheStats {
+  getStats(): MapplsApiCacheStats {
     this.deleteExpired();
 
     return {
@@ -110,6 +110,6 @@ function normalizeCachePart(value: unknown): string {
   return String(value).trim().toLowerCase();
 }
 
-export function createGoogleApiCacheKey(namespace: string, ...parts: unknown[]) {
+export function createMapplsApiCacheKey(namespace: string, ...parts: unknown[]) {
   return [namespace, ...parts.map(normalizeCachePart)].map(encodeURIComponent).join(":");
 }

@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { geocodeAddress, getTourismTravelInfo } from "@/features/tourism/services/tourism-service";
 import type { TourismGeoPoint, TravelInfo, TravelMode } from "@/features/tourism/providers/tourism-provider";
+import { createMapplsDirectionsUrl, createMapplsPlaceUrl } from "@/features/tourism/utils/mappls-deep-links";
 
-type GetDirectionsButtonProps = { destination?: TourismGeoPoint; placeName: string };
-type RouteOrigin = TourismGeoPoint | string;
+type GetDirectionsButtonProps = { destination?: TourismGeoPoint; destinationMapplsPin?: string; placeName: string };
+type RouteOrigin = TourismGeoPoint;
 
 const travelModes: { label: string; value: Extract<TravelMode, "driving" | "walking" | "bicycling"> }[] = [
   { label: "Driving", value: "driving" },
@@ -18,7 +19,7 @@ const travelModes: { label: string; value: Extract<TravelMode, "driving" | "walk
   { label: "Cycling", value: "bicycling" },
 ];
 
-export function GetDirectionsButton({ destination, placeName }: GetDirectionsButtonProps) {
+export function GetDirectionsButton({ destination, destinationMapplsPin, placeName }: GetDirectionsButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<TravelMode>("driving");
   const [manualLocation, setManualLocation] = useState("");
@@ -39,7 +40,7 @@ export function GetDirectionsButton({ destination, placeName }: GetDirectionsBut
     try {
       const result = await getTourismTravelInfo(nextOrigin, destination, mode);
       if (result.status !== "ok" || result.distanceMeters === null || result.durationSeconds === null) {
-        setMessage("A route estimate is not available for this journey right now. You can still open it in Google Maps.");
+        setMessage("A route estimate is not available for this journey right now. You can still open it in Mappls.");
         return;
       }
       setRoute(result);
@@ -86,12 +87,9 @@ export function GetDirectionsButton({ destination, placeName }: GetDirectionsBut
   }
 
   const mapsUrl = destination
-    ? createGoogleMapsDirectionsUrl(origin ?? placeName, destination, mode)
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName)}`;
-  return <Dialog open={isOpen} onOpenChange={setIsOpen}><DialogTrigger asChild><Button type="button" variant="outline"><Navigation className="size-4" aria-hidden />Get Directions</Button></DialogTrigger><DialogContent><DialogHeader><DialogTitle>Directions to {placeName}</DialogTitle><DialogDescription>Choose how you want to travel and where you are starting from.</DialogDescription></DialogHeader><div className="grid gap-4">{destination ? <><Select value={mode} onValueChange={(value) => void handleModeChange(value as TravelMode)}><SelectTrigger className="w-full"><SelectValue placeholder="Travel mode" /></SelectTrigger><SelectContent>{travelModes.map((travelMode) => <SelectItem key={travelMode.value} value={travelMode.value}>{travelMode.label}</SelectItem>)}</SelectContent></Select><Button type="button" variant="secondary" disabled={isLoading} onClick={handleUseCurrentLocation}>{isLoading ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <MapPinned className="size-4" aria-hidden />}Use my current location</Button><div className="grid gap-2"><label htmlFor="manual-origin" className="text-sm font-medium">Starting location</label><div className="flex gap-2"><Input id="manual-origin" value={manualLocation} onChange={(event) => setManualLocation(event.target.value)} placeholder="City, address, or landmark" /><Button type="button" disabled={isLoading} onClick={() => void handleManualLocation()}>Go</Button></div></div>{route ? <div className="rounded-lg bg-muted p-4 text-sm"><p className="font-semibold">Estimated route</p><p className="mt-2 text-muted-foreground">{route.distanceText} · {route.durationText}</p></div> : <p className="text-sm text-muted-foreground">{message}</p>}</> : <p className="text-sm text-muted-foreground">Route estimates are unavailable because this place does not have location coordinates.</p>}<Button asChild variant="outline"><a href={mapsUrl} target="_blank" rel="noreferrer">Open route in Google Maps</a></Button></div></DialogContent></Dialog>;
-}
-
-function createGoogleMapsDirectionsUrl(origin: RouteOrigin, destination: TourismGeoPoint, mode: TravelMode) {
-  const originValue = typeof origin === "string" ? origin : `${origin.latitude},${origin.longitude}`;
-  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originValue)}&destination=${encodeURIComponent(`${destination.latitude},${destination.longitude}`)}&travelmode=${mode}`;
+    ? origin
+      ? createMapplsDirectionsUrl(origin, { ...destination, mapplsPin: destinationMapplsPin })
+      : createMapplsPlaceUrl({ ...destination, mapplsPin: destinationMapplsPin })
+    : undefined;
+  return <Dialog open={isOpen} onOpenChange={setIsOpen}><DialogTrigger asChild><Button type="button" variant="outline"><Navigation className="size-4" aria-hidden />Get Directions</Button></DialogTrigger><DialogContent><DialogHeader><DialogTitle>Directions to {placeName}</DialogTitle><DialogDescription>Choose how you want to travel and where you are starting from.</DialogDescription></DialogHeader><div className="grid gap-4">{destination ? <><Select value={mode} onValueChange={(value) => void handleModeChange(value as TravelMode)}><SelectTrigger className="w-full"><SelectValue placeholder="Travel mode" /></SelectTrigger><SelectContent>{travelModes.map((travelMode) => <SelectItem key={travelMode.value} value={travelMode.value}>{travelMode.label}</SelectItem>)}</SelectContent></Select><Button type="button" variant="secondary" disabled={isLoading} onClick={handleUseCurrentLocation}>{isLoading ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <MapPinned className="size-4" aria-hidden />}Use my current location</Button><div className="grid gap-2"><label htmlFor="manual-origin" className="text-sm font-medium">Starting location</label><div className="flex gap-2"><Input id="manual-origin" value={manualLocation} onChange={(event) => setManualLocation(event.target.value)} placeholder="City, address, or landmark" /><Button type="button" disabled={isLoading} onClick={() => void handleManualLocation()}>Go</Button></div></div>{route ? <div className="rounded-lg bg-muted p-4 text-sm"><p className="font-semibold">Estimated route</p><p className="mt-2 text-muted-foreground">{route.distanceText} · {route.durationText}</p></div> : <p className="text-sm text-muted-foreground">{message}</p>}</> : <p className="text-sm text-muted-foreground">Route estimates are unavailable because this place does not have location coordinates.</p>}{mapsUrl ? <Button asChild variant="outline"><a href={mapsUrl} target="_blank" rel="noreferrer">{origin ? "Open route in Mappls" : "Open destination in Mappls"}</a></Button> : null}</div></DialogContent></Dialog>;
 }

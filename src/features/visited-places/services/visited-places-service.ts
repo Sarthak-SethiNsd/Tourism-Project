@@ -19,7 +19,7 @@ export async function listUserVisitedPlaces(userId: string): Promise<VisitedPlac
 
 function mapVisitedPlaceDocument(userId: string, snapshot: QueryDocumentSnapshot<DocumentData>): VisitedPlace {
   const data = snapshot.data() as Partial<VisitedPlaceDocument>;
-  return { id: snapshot.id, userId, placeId: data.placeId ?? snapshot.id, googlePlaceId: data.googlePlaceId, placeName: data.placeName ?? "Visited place", thumbnailUrl: data.thumbnailUrl, thumbnailPhotoReference: data.thumbnailPhotoReference, district: data.district, state: data.state, visitedAt: toDate(data.visitedAt), createdAt: toDate(data.createdAt), updatedAt: toDate(data.updatedAt) };
+  return { id: snapshot.id, userId, placeId: data.placeId ?? snapshot.id, mapplsPlaceId: data.mapplsPlaceId, placeName: data.placeName ?? "Visited place", thumbnailUrl: data.thumbnailUrl, thumbnailPhotoReference: data.thumbnailPhotoReference, district: data.district, state: data.state, visitedAt: toDate(data.visitedAt), createdAt: toDate(data.createdAt), updatedAt: toDate(data.updatedAt) };
 }
 function toDate(value: Timestamp | FieldValue | undefined) { return isFirestoreTimestamp(value) ? value.toDate() : new Date(); }
 function isFirestoreTimestamp(value: Timestamp | FieldValue | undefined): value is Timestamp { return Boolean(value && "toDate" in value && typeof value.toDate === "function"); }

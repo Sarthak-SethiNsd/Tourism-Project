@@ -39,6 +39,7 @@ import { MarkAsVisitedButton } from "@/features/visited-places/mark-as-visited-b
 import { createCollectionPlaceInput } from "@/features/collections/collection-place";
 import { GetDirectionsButton } from "@/features/tourism/place-details/get-directions-button";
 import { CurrentWeather } from "@/features/tourism/place-details/current-weather";
+import { createMapplsPlaceUrl } from "@/features/tourism/utils/mappls-deep-links";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
 type PlaceDetailsPageProps = {
@@ -66,9 +67,11 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
   const latitude = place.coordinates?.latitude;
   const longitude = place.coordinates?.longitude;
   const hasCoordinates = typeof latitude === "number" && typeof longitude === "number";
-  const googleMapsUrl = createGoogleMapsUrl(place, latitude, longitude);
+  const mapplsUrl = hasCoordinates
+    ? createMapplsPlaceUrl({ latitude, longitude, mapplsPin: place.mapplsPlaceId })
+    : undefined;
   const address = formatAddress(place, district, region);
-  const photos = await listExternalTourismPlacePhotos(place.googlePlaceId ?? place.id);
+  const photos = place.mapplsPlaceId ? await listExternalTourismPlacePhotos(place.mapplsPlaceId) : [];
   const galleryImages = photos.length ? photos : createFallbackPhotos(place);
   const nearbyAttractions = hasCoordinates
     ? await getNearbyTourismPlaces(latitude, longitude, DEFAULT_NEARBY_RADIUS_METERS, "tourist attractions")
@@ -141,7 +144,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
                 <SharePlaceButton placeId={place.id} placeName={place.name} address={address} />
                 <AddToTripButton place={createTripPlaceInput(place, district, region)} />
                 <AddToCollectionButton place={createCollectionPlaceInput(place, district, region)} />
-                {hasCoordinates ? <GetDirectionsButton destination={{ latitude, longitude }} placeName={place.name} /> : <GetDirectionsButton placeName={place.name} />}
+                {hasCoordinates ? <GetDirectionsButton destination={{ latitude, longitude }} destinationMapplsPin={place.mapplsPlaceId} placeName={place.name} /> : <GetDirectionsButton placeName={place.name} />}
               </div>
 
               <div className="grid gap-3 text-sm text-muted-foreground">
@@ -152,7 +155,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
                   href={place.websiteUrl}
                   label={place.websiteUrl ? "Website" : "Website not available"}
                 />
-                <InfoLink icon={Map} href={googleMapsUrl} label="Open in Google Maps" />
+                <InfoLink icon={Map} href={mapplsUrl} label="Open in Mappls" />
                 <InfoLine
                   icon={Navigation}
                   value={hasCoordinates ? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` : "Coordinates not available"}
@@ -297,7 +300,7 @@ function NearbyPlaces({ attractions }: { attractions: NearbyPlace[] }) {
                   />
                   <InfoLine icon={MapPin} value={attraction.distanceText} fallback="Distance not available" />
                   <Button asChild variant="outline" className="mt-2 w-fit">
-                    <Link href={`/place/${attraction.googlePlaceId ?? attraction.id}`}>Open Details</Link>
+                    <Link href={`/place/${attraction.mapplsPlaceId ?? attraction.id}`}>Open Details</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -379,16 +382,6 @@ function createFallbackPhotos(place: TourismPlace): GalleryPhoto[] {
   }
 
   return place.imageUrl ? [{ url: place.imageUrl }] : [];
-}
-
-function createGoogleMapsUrl(place: TourismPlace, latitude?: number | null, longitude?: number | null) {
-  if (typeof latitude === "number" && typeof longitude === "number") {
-    const placeId = encodeURIComponent(place.googlePlaceId ?? place.id);
-
-    return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&query_place_id=${placeId}`;
-  }
-
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name)}`;
 }
 
 function formatNearbyCategory(category: NearbyPlace["category"]) {

@@ -5,7 +5,7 @@ export function createCollectionPlaceInput(place: TourismPlace, district?: India
   const primaryImage = place.images?.[0];
   return {
     placeId: place.id,
-    googlePlaceId: place.googlePlaceId,
+    mapplsPlaceId: place.mapplsPlaceId,
     placeName: place.name,
     thumbnailUrl: primaryImage?.url ?? place.imageUrl,
     thumbnailPhotoReference: primaryImage?.photoReference,

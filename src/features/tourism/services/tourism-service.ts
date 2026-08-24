@@ -485,7 +485,7 @@ export class TourismService {
 
     return {
       placeId: place.id,
-      googlePlaceId: place.googlePlaceId,
+      mapplsPlaceId: place.mapplsPlaceId,
       name: place.name,
       photoUrl: primaryImage?.url ?? place.imageUrl,
       photoReference: primaryImage?.photoReference,
@@ -508,7 +508,7 @@ export class TourismService {
 
     return {
       placeId: place.id,
-      googlePlaceId: place.googlePlaceId,
+      mapplsPlaceId: place.mapplsPlaceId,
       placeName: place.name,
       district: context?.district?.name ?? place.districtName ?? place.address?.district,
       state: context?.region?.name ?? place.address?.region,
@@ -523,7 +523,7 @@ export class TourismService {
     const primaryImage = place.images?.[0];
     return {
       placeId: place.id,
-      googlePlaceId: place.googlePlaceId,
+      mapplsPlaceId: place.mapplsPlaceId,
       placeName: place.name,
       thumbnailUrl: primaryImage?.url ?? place.imageUrl,
       thumbnailPhotoReference: primaryImage?.photoReference,
@@ -536,7 +536,7 @@ export class TourismService {
     const primaryImage = place.images?.[0];
     return {
       placeId: place.id,
-      googlePlaceId: place.googlePlaceId,
+      mapplsPlaceId: place.mapplsPlaceId,
       placeName: place.name,
       thumbnailUrl: primaryImage?.url ?? place.imageUrl,
       thumbnailPhotoReference: primaryImage?.photoReference,
@@ -553,7 +553,7 @@ export class TourismService {
 
     return {
       placeId: place.id,
-      googlePlaceId: place.googlePlaceId,
+      mapplsPlaceId: place.mapplsPlaceId,
       placeName: place.name,
       thumbnailPhotoReference: primaryImage?.photoReference,
       thumbnailUrl: primaryImage?.url ?? place.imageUrl,
@@ -588,7 +588,7 @@ function formatRouteLocation(location: TourismGeoPoint | string) {
 
 type OpenMeteoWeatherResponse = {
   current?: {
-    time?: string;
+    time?: number;
     temperature_2m?: number;
     apparent_temperature?: number;
     relative_humidity_2m?: number;
@@ -602,7 +602,7 @@ async function fetchCurrentWeather(latitude: number, longitude: number): Promise
     latitude: String(latitude),
     longitude: String(longitude),
     current: "temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code",
-    timezone: "auto",
+    timeformat: "unixtime",
   });
 
   try {
@@ -617,7 +617,7 @@ async function fetchCurrentWeather(latitude: number, longitude: number): Promise
       windSpeedKph: current.wind_speed_10m,
       weatherCode: current.weather_code,
       condition: getWeatherCondition(current.weather_code),
-      updatedAt: current.time ? new Date(current.time) : new Date(),
+      updatedAt: typeof current.time === "number" ? new Date(current.time * 1000) : new Date(),
     };
   } catch {
     return null;

@@ -1,6 +1,8 @@
 import {
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
   type User,
@@ -15,6 +17,14 @@ export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
 
   return signInWithPopup(getFirebaseAuth(), provider);
+}
+
+export function signInWithEmail(email: string, password: string) {
+  return signInWithEmailAndPassword(getFirebaseAuth(), email, password);
+}
+
+export function signUpWithEmail(email: string, password: string) {
+  return createUserWithEmailAndPassword(getFirebaseAuth(), email, password);
 }
 
 export function signOutCurrentUser() {
