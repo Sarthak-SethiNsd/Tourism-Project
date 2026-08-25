@@ -1,3 +1,3 @@
 # Retrieval
 
-Retrieval and vector database adapters will live here in Version 2.
+No retrieval or vector database adapters are included in this project.
