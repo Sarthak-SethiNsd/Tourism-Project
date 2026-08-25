@@ -25,7 +25,7 @@ export const foundationModules = [
   {
     id: "saved-places",
     name: "Saved Places",
-    description: "Store and service boundaries ready for user saved-place workflows.",
+    description: "Store and service boundaries for user saved-place workflows.",
     status: "placeholder",
     icon: Heart,
   },

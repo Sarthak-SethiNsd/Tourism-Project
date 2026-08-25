@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Compass, Sparkles } from "lucide-react";
+import { Compass } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { EmptyState } from "@/components/shared/empty-state";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useDistrictsByRegion } from "@/features/tourism/hooks/use-districts-by-region";
 import type { IndianDistrict, IndianRegion, TourismCategory, TourismPlace } from "@/features/tourism/types";
 import { filterTourismPlaces } from "@/features/tourism/utils/place-filters";
@@ -69,7 +68,14 @@ export function ExploreExperience({ places, categories, regions, initialFilters 
   const regionById = useMemo(() => new Map(regions.map((region) => [region.id, region])), [regions]);
   const districtById = useMemo(() => buildDistrictMap(districts), [districts]);
 
-  const featuredPlaces = useMemo(() => places.filter((place) => place.isFeatured), [places]);
+  const discoveryPlaces = useMemo(
+    () => getDiscoveryPlaces(places, filters.stateId, filters.districtId),
+    [filters.districtId, filters.stateId, places],
+  );
+  const discoveryContent = getDiscoveryContent({
+    district: filters.districtId ? districtById.get(filters.districtId) : undefined,
+    region: filters.stateId ? regionById.get(filters.stateId) : undefined,
+  });
   useEffect(() => {
     setFilters((currentFilters) => ({ ...currentFilters, ...getStoredExploreFilters() }));
     setHasRestoredFilters(true);
@@ -162,60 +168,30 @@ export function ExploreExperience({ places, categories, regions, initialFilters 
   return (
     <AppShell>
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 pb-8 pt-24 sm:px-8 lg:px-12">
-        <section className="grid gap-6 lg:grid-cols-[1fr_320px] lg:items-stretch">
-          <div className="relative overflow-hidden rounded-lg bg-primary p-6 text-primary-foreground shadow-sm sm:p-8">
-            <div className="relative z-10 max-w-2xl">
-              <div className="mb-5 flex size-12 items-center justify-center rounded-lg bg-white/15">
-                <Compass className="size-6" aria-hidden />
-              </div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-primary-foreground/80">Explore India</p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">
-                Discover places by state, district, mood, and budget.
-              </h1>
-              <p className="mt-4 max-w-xl text-sm leading-7 text-primary-foreground/82 sm:text-base">
-                Browse curated offline destinations across India. Start from your selected onboarding location or refine the journey here.
-              </p>
+        <section className="relative overflow-hidden rounded-lg bg-primary p-6 text-primary-foreground shadow-sm sm:p-8">
+          <div className="relative z-10 max-w-2xl">
+            <div className="mb-5 flex size-12 items-center justify-center rounded-lg bg-white/15">
+              <Compass className="size-6" aria-hidden />
             </div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-primary-foreground/80">Explore India</p>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">
+              Discover places by state, district, mood, and budget.
+            </h1>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-primary-foreground/82 sm:text-base">
+              Browse curated destinations across India. Start from your selected onboarding location or refine the journey here.
+            </p>
           </div>
-
-          <Card className="border-primary/10 bg-card shadow-sm">
-            <CardContent className="flex h-full flex-col justify-between gap-5 p-5">
-              <div>
-                <div className="mb-4 flex size-11 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-                  <Sparkles className="size-5" aria-hidden />
-                </div>
-                <h2 className="text-xl font-semibold">Version 1 ready</h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  This Explore page runs entirely on local data and stays independent from Firebase, maps, APIs, and AI.
-                </p>
-              </div>
-              <div className="grid grid-cols-3 gap-3 text-center">
-                <div className="rounded-lg bg-muted p-3">
-                  <p className="text-lg font-semibold">{places.length}</p>
-                  <p className="text-xs text-muted-foreground">Places</p>
-                </div>
-                <div className="rounded-lg bg-muted p-3">
-                  <p className="text-lg font-semibold">{categories.length}</p>
-                  <p className="text-xs text-muted-foreground">Categories</p>
-                </div>
-                <div className="rounded-lg bg-muted p-3">
-                  <p className="text-lg font-semibold">{regions.length}</p>
-                  <p className="text-xs text-muted-foreground">Regions</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </section>
 
-        {featuredPlaces.length ? (
+        {discoveryPlaces.length ? (
           <section className="space-y-4">
             <SectionHeader
-              eyebrow="Featured"
-              title="Start with these travel highlights"
-              description="A short list of high-signal destinations across heritage, nature, and spiritual travel."
+              eyebrow={discoveryContent.eyebrow}
+              title={discoveryContent.title}
+              description={discoveryContent.description}
             />
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {featuredPlaces.map((place) => (
+              {discoveryPlaces.map((place) => (
                 <PlaceCard
                   key={place.id}
                   place={place}
@@ -307,4 +283,42 @@ function getDistanceKm(origin: { latitude: number; longitude: number }, destinat
   const longitudeDelta = toRadians(destination.longitude - origin.longitude);
   const calculation = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(toRadians(origin.latitude)) * Math.cos(toRadians(destination.latitude)) * Math.sin(longitudeDelta / 2) ** 2;
   return 6371 * 2 * Math.atan2(Math.sqrt(calculation), Math.sqrt(1 - calculation));
+}
+
+function getDiscoveryPlaces(places: TourismPlace[], stateId: string, districtId: string) {
+  if (!stateId) {
+    return places.filter((place) => place.isFeatured);
+  }
+
+  const scopedPlaces = places.filter((place) =>
+    place.stateId === stateId && (!districtId || place.districtId === districtId),
+  );
+
+  return [...scopedPlaces]
+    .sort((left, right) => Number(right.isFeatured) - Number(left.isFeatured))
+    .slice(0, 4);
+}
+
+function getDiscoveryContent({ district, region }: { district?: IndianDistrict; region?: IndianRegion }) {
+  if (district && region) {
+    return {
+      eyebrow: region.name,
+      title: `Highlights in ${district.name}`,
+      description: `Explore destinations in ${district.name}, ${region.name}.`,
+    };
+  }
+
+  if (region) {
+    return {
+      eyebrow: region.name,
+      title: `Discover ${region.name}`,
+      description: `Travel highlights from across ${region.name}.`,
+    };
+  }
+
+  return {
+    eyebrow: "Featured",
+    title: "Start with these travel highlights",
+    description: "A short list of destinations across heritage, nature, and spiritual travel.",
+  };
 }
