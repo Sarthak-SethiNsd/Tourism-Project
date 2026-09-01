@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
-  ArrowLeft,
   CalendarDays,
   Clock3,
   ExternalLink,
@@ -39,6 +38,7 @@ import { MarkAsVisitedButton } from "@/features/visited-places/mark-as-visited-b
 import { createCollectionPlaceInput } from "@/features/collections/collection-place";
 import { GetDirectionsButton } from "@/features/tourism/place-details/get-directions-button";
 import { CurrentWeather } from "@/features/tourism/place-details/current-weather";
+import { BackToExploreButton } from "@/features/tourism/place-details/back-to-explore-button";
 import { createMapplsPlaceUrl } from "@/features/tourism/utils/mappls-deep-links";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
@@ -85,12 +85,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
     <AppShell>
       <RecentlyViewedTracker place={place} district={district} region={region} />
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 pb-8 pt-24 sm:px-8 lg:px-12">
-        <Button asChild variant="ghost" className="w-fit rounded-lg">
-          <Link href="/explore">
-            <ArrowLeft className="size-4" aria-hidden />
-            Back to Explore
-          </Link>
-        </Button>
+        <BackToExploreButton />
 
         <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-stretch">
           <div className="relative min-h-[380px] overflow-hidden rounded-lg bg-muted shadow-sm">

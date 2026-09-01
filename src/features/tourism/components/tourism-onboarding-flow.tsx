@@ -10,12 +10,14 @@ import { routes } from "@/config/routes";
 import { DistrictDropdown } from "@/features/tourism/components/district-dropdown";
 import { StateDropdown } from "@/features/tourism/components/state-dropdown";
 import { signInWithGoogle } from "@/features/authentication/services/authentication-service";
+import { useAuthUser } from "@/features/authentication/hooks/use-auth-user";
 import { useDistrictsByRegion } from "@/features/tourism/hooks/use-districts-by-region";
 import { useIndianRegions } from "@/features/tourism/hooks/use-indian-regions";
 import { buildExploreSearchParams } from "@/features/tourism/utils/explore-navigation";
 import { districtsToSelectOptions, regionToSelectOption, regionsToSelectOptions } from "@/features/tourism/utils/region-mappers";
 import { getRecentRegionOptions, saveRecentRegion } from "@/features/tourism/utils/recent-regions";
 import { PrimaryButton } from "@/components/shared/primary-button";
+import { LoadingState } from "@/components/shared/loading-state";
 import { ScreenContainer } from "@/components/shared/screen-container";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,6 +39,7 @@ type TourismOnboardingFlowProps = {
 
 export function TourismOnboardingFlow({ initialStep = "splash" }: TourismOnboardingFlowProps) {
   const router = useRouter();
+  const { user, isReady } = useAuthUser();
   const { regions, status: regionsStatus } = useIndianRegions();
   const [step, setStep] = useState<OnboardingStep>(initialStep);
   const [selectedState, setSelectedState] = useState("");
@@ -58,10 +61,16 @@ export function TourismOnboardingFlow({ initialStep = "splash" }: TourismOnboard
   const canExplore = Boolean(selectedState && (selectedDistrict || entireStateSelected));
 
   useEffect(() => {
-    if (regions.length) {
-      setRecentStates(getRecentRegionOptions(regions));
+    if (isReady && regions.length) {
+      setRecentStates(getRecentRegionOptions(regions, user?.uid));
     }
-  }, [regions]);
+  }, [isReady, regions, user?.uid]);
+
+  useEffect(() => {
+    if (isReady && user && (step === "splash" || step === "login")) {
+      setStep("state");
+    }
+  }, [isReady, step, user]);
 
   function goToStep(nextStep: OnboardingStep) {
     setStep(nextStep);
@@ -76,8 +85,8 @@ export function TourismOnboardingFlow({ initialStep = "splash" }: TourismOnboard
     setSelectedState(value);
     setSelectedDistrict("");
     setEntireStateSelected(false);
-    saveRecentRegion(value, regions);
-    setRecentStates(getRecentRegionOptions(regions));
+    saveRecentRegion(value, regions, user?.uid);
+    setRecentStates(getRecentRegionOptions(regions, user?.uid));
   }
 
   function handleExplore() {
@@ -92,6 +101,16 @@ export function TourismOnboardingFlow({ initialStep = "splash" }: TourismOnboard
     });
 
     router.push(`${routes.explore}?${searchParams.toString()}`);
+  }
+
+  if (!isReady) {
+    return (
+      <main className="min-h-dvh bg-background">
+        <ScreenContainer className="justify-center">
+          <LoadingState label="Restoring your session" />
+        </ScreenContainer>
+      </main>
+    );
   }
 
   async function handleGoogleSignIn() {

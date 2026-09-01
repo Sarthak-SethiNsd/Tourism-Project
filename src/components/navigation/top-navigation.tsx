@@ -1,12 +1,22 @@
+"use client";
+
 import Link from "next/link";
-import { Menu, Search } from "lucide-react";
+import { LogOut, Menu, Search, UserRound } from "lucide-react";
 import { appConfig } from "@/config/app";
 import { secondaryNavigation } from "@/config/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { useAuthUser } from "@/features/authentication/hooks/use-auth-user";
+import { signOutCurrentUser } from "@/services/firebase/auth-service";
 
 export function TopNavigation() {
+  const { user, isReady } = useAuthUser();
+
+  async function handleSignOut() {
+    await signOutCurrentUser();
+  }
+
   return (
     <header className="fixed inset-x-0 top-0 z-30 border-b border-white/10 bg-primary/72 text-primary-foreground backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-8 lg:px-12">
@@ -20,6 +30,26 @@ export function TopNavigation() {
           <Button size="icon" variant="ghost" className="size-10 text-primary-foreground hover:bg-white/15" aria-label="Search">
             <Search className="size-5" aria-hidden />
           </Button>
+          {isReady && user ? (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button size="icon" variant="ghost" className="size-10 text-primary-foreground hover:bg-white/15" aria-label="Account menu">
+                  <UserRound className="size-5" aria-hidden />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px]">
+                <SheetHeader>
+                  <SheetTitle>Signed in</SheetTitle>
+                </SheetHeader>
+                <p className="mt-4 truncate px-4 text-sm text-muted-foreground">{user.email ?? "Tourism account"}</p>
+                <Separator className="my-5" />
+                <Button type="button" variant="outline" className="mx-4" onClick={() => void handleSignOut()}>
+                  <LogOut className="size-4" aria-hidden />
+                  Sign out
+                </Button>
+              </SheetContent>
+            </Sheet>
+          ) : null}
           <Sheet>
             <SheetTrigger asChild>
               <Button size="icon" variant="ghost" className="size-10 text-primary-foreground hover:bg-white/15" aria-label="Open menu">
