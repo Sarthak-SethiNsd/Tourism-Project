@@ -77,9 +77,21 @@ export function ExploreExperience({ places, categories, regions, initialFilters 
     region: filters.stateId ? regionById.get(filters.stateId) : undefined,
   });
   useEffect(() => {
-    setFilters((currentFilters) => ({ ...currentFilters, ...getStoredExploreFilters() }));
+    const storedFilters = getStoredExploreFilters();
+    const hasExplicitLocationSelection = Boolean(initialFilters?.stateId || initialFilters?.districtId);
+
+    setFilters((currentFilters) => ({
+      ...currentFilters,
+      ...storedFilters,
+      ...(hasExplicitLocationSelection
+        ? {
+            stateId: initialFilters?.stateId ?? "",
+            districtId: initialFilters?.districtId ?? "",
+          }
+        : {}),
+    }));
     setHasRestoredFilters(true);
-  }, []);
+  }, [initialFilters?.districtId, initialFilters?.stateId]);
 
   useEffect(() => {
     if (hasRestoredFilters) storeExploreFilters(filters);

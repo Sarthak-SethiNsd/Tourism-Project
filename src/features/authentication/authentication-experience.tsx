@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, LoaderCircle } from "lucide-react";
 import { ScreenContainer } from "@/components/shared/screen-container";
@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { routes } from "@/config/routes";
 import { signInWithEmail, signUpWithEmail } from "@/features/authentication/services/authentication-service";
+import { useAuthUser } from "@/features/authentication/hooks/use-auth-user";
+import { LoadingState } from "@/components/shared/loading-state";
 
 export type AuthenticationMode = "signin" | "signup";
 
@@ -20,6 +22,7 @@ type AuthenticationExperienceProps = {
 
 export function AuthenticationExperience({ initialMode }: AuthenticationExperienceProps) {
   const router = useRouter();
+  const { user, isReady } = useAuthUser();
   const [mode, setMode] = useState<AuthenticationMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,6 +30,22 @@ export function AuthenticationExperience({ initialMode }: AuthenticationExperien
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSignUp = mode === "signup";
+
+  useEffect(() => {
+    if (isReady && user) {
+      router.replace(`${routes.home}?step=state`);
+    }
+  }, [isReady, router, user]);
+
+  if (!isReady || user) {
+    return (
+      <main className="min-h-dvh bg-background">
+        <ScreenContainer className="justify-center">
+          <LoadingState label={user ? "Opening your account" : "Restoring your session"} />
+        </ScreenContainer>
+      </main>
+    );
+  }
 
   function switchMode(nextMode: AuthenticationMode) {
     setMode(nextMode);
