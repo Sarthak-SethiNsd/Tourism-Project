@@ -23,7 +23,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   getNearbyTourismPlaces,
   getTourismTravelInfo,
-  listExternalTourismPlacePhotos,
 } from "@/features/tourism/services/tourism-service";
 import { PlaceReviews } from "@/features/tourism/place-details/place-reviews";
 import { SavePlaceButton } from "@/features/tourism/place-details/save-place-button";
@@ -39,6 +38,7 @@ import { createCollectionPlaceInput } from "@/features/collections/collection-pl
 import { GetDirectionsButton } from "@/features/tourism/place-details/get-directions-button";
 import { CurrentWeather } from "@/features/tourism/place-details/current-weather";
 import { BackToExploreButton } from "@/features/tourism/place-details/back-to-explore-button";
+import { PlaceGallery } from "@/features/tourism/place-details/place-gallery";
 import { createMapplsPlaceUrl } from "@/features/tourism/utils/mappls-deep-links";
 import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
 
@@ -47,11 +47,6 @@ type PlaceDetailsPageProps = {
   categories: TourismCategory[];
   region: IndianRegion | null;
   district?: IndianDistrict;
-};
-
-type GalleryPhoto = {
-  url: string;
-  attribution?: string;
 };
 
 const priceLabelByLevel: Record<TourismPlace["priceLevel"], string> = {
@@ -71,8 +66,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
     ? createMapplsPlaceUrl({ latitude, longitude, mapplsPin: place.mapplsPlaceId })
     : undefined;
   const address = formatAddress(place, district, region);
-  const photos = place.mapplsPlaceId ? await listExternalTourismPlacePhotos(place.mapplsPlaceId) : [];
-  const galleryImages = photos.length ? photos : createFallbackPhotos(place);
+  const galleryImages = getLocalGalleryImages(place);
   const nearbyAttractions = hasCoordinates
     ? await getNearbyTourismPlaces(latitude, longitude, DEFAULT_NEARBY_RADIUS_METERS, "tourist attractions")
     : [];
@@ -219,42 +213,14 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
         </section>
 
         <CurrentWeather latitude={latitude} longitude={longitude} />
-        <PhotosGallery placeName={place.name} photos={galleryImages} />
+        <section className="space-y-4">
+          <SectionHeader eyebrow="Photos" title="Gallery" />
+          <PlaceGallery placeName={place.name} images={galleryImages} />
+        </section>
         <PlaceReviews reviews={place.reviews} />
         <NearbyPlaces attractions={nearbyAttractions.filter((attraction) => attraction.id !== place.id).slice(0, 10)} />
       </main>
     </AppShell>
-  );
-}
-
-function PhotosGallery({ placeName, photos }: { placeName: string; photos: GalleryPhoto[] }) {
-  return (
-    <section className="space-y-4">
-      <SectionHeader eyebrow="Photos" title="Gallery" />
-      {photos.length ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {photos.slice(0, 6).map((photo, index) => (
-            <figure key={`${photo.url}-${index}`} className="overflow-hidden rounded-lg border bg-card shadow-sm">
-              <div className="relative aspect-[4/3] bg-muted">
-                <Image
-                  src={photo.url}
-                  alt={`${placeName} photo ${index + 1}`}
-                  fill
-                  unoptimized={isRemoteImage(photo.url)}
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover"
-                />
-              </div>
-              {photo.attribution ? (
-                <figcaption className="px-3 py-2 text-xs text-muted-foreground">{photo.attribution}</figcaption>
-              ) : null}
-            </figure>
-          ))}
-        </div>
-      ) : (
-        <EmptyState title="No photos yet" description="The current provider did not return gallery photos for this place." />
-      )}
-    </section>
   );
 }
 
@@ -371,12 +337,14 @@ function formatTypes(tags: string[], categories: TourismCategory[]) {
   return values.length ? values.map((value) => value.replaceAll("_", " ")).join(", ") : "Types not available";
 }
 
-function createFallbackPhotos(place: TourismPlace): GalleryPhoto[] {
-  if (place.images?.length) {
-    return place.images.map((image) => ({ url: image.url, attribution: image.attribution }));
+function getLocalGalleryImages(place: TourismPlace) {
+  const curatedImages = place.images?.filter((image) => image.source !== "mappls") ?? [];
+
+  if (curatedImages.length) {
+    return curatedImages;
   }
 
-  return place.imageUrl ? [{ url: place.imageUrl }] : [];
+  return place.imageUrl && !place.mapplsPlaceId ? [{ url: place.imageUrl, alt: place.name, source: "local" as const }] : [];
 }
 
 function formatNearbyCategory(category: NearbyPlace["category"]) {
