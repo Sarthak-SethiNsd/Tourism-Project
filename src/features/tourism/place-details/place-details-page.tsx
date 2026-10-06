@@ -338,10 +338,22 @@ function formatTypes(tags: string[], categories: TourismCategory[]) {
 }
 
 function getLocalGalleryImages(place: TourismPlace) {
-  const curatedImages = place.images?.filter((image) => image.source !== "mappls") ?? [];
+  const curatedImages =
+    place.images?.filter(
+      (image) =>
+        image.source !== "mappls" &&
+        image.isVisible !== false &&
+        image.status !== "archived",
+    ) ?? [];
 
   if (curatedImages.length) {
-    return curatedImages;
+    // Sort by explicit order when present; otherwise preserve array position.
+    return [...curatedImages].sort((a, b) => {
+      if (a.order !== undefined && b.order !== undefined) return a.order - b.order;
+      if (a.order !== undefined) return -1;
+      if (b.order !== undefined) return 1;
+      return 0;
+    });
   }
 
   return place.imageUrl && !place.mapplsPlaceId ? [{ url: place.imageUrl, alt: place.name, source: "local" as const }] : [];

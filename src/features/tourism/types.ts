@@ -5,6 +5,7 @@ export type {
   TourismCategoryId,
   TourismContactInfo,
   TourismCoordinates,
+  TourismImageStatus,
   TourismOpeningHours,
   TourismOpeningPeriod,
   TourismLocationFilter,

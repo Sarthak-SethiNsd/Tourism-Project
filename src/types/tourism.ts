@@ -17,14 +17,76 @@ export type TourismCoordinates = {
   longitude: number | null;
 };
 
+/**
+ * Lifecycle state for admin-managed images.
+ * – "active"   Image is published and visible in the gallery.
+ * – "draft"    Image has been uploaded but is not yet published.
+ * – "archived" Image has been removed from display but is retained for audit purposes.
+ */
+export type TourismImageStatus = "active" | "draft" | "archived";
+
 export type TourismPlaceImage = {
+  /** URL or public path of the image asset. Required. */
   url: string;
+
+  /**
+   * Stable identifier for this image record.
+   * Required for admin-managed images ("admin" source); optional for all other sources.
+   */
+  id?: string;
+
+  /**
+   * Provider-specific reference, used to fetch full-resolution assets (e.g. a Mappls photo token).
+   * Also serves as a deduplication hint for thumbnail picking in service mappers.
+   */
   photoReference?: string;
+
+  /**
+   * Firebase Storage path for admin-uploaded images (e.g. "places/{placeId}/images/{imageId}.webp").
+   * Not present for externally-sourced images.
+   */
+  storagePath?: string;
+
+  /** Accessible alt text. Falls back to place name + index in Gallery V1. */
   alt?: string;
+
+  /** Display credit line rendered below the gallery. */
   attribution?: string;
+
+  /** Intrinsic width in pixels, if known. Used by the lightbox for optimal sizing. */
   width?: number;
+
+  /** Intrinsic height in pixels, if known. Used by the lightbox for optimal sizing. */
   height?: number;
-  source?: "local" | "mappls" | "partner" | "user";
+
+  /**
+   * Provenance of the image.
+   * – "local"   Bundled static asset (current default for curated place data).
+   * – "admin"   Uploaded and managed by an administrator.
+   * – "partner" Sourced from a content partner.
+   * – "user"    Submitted by an end-user.
+   * – "mappls"  Retrieved from the Mappls Places API (excluded from the local gallery).
+   */
+  source?: "local" | "admin" | "mappls" | "partner" | "user";
+
+  /**
+   * Explicit display order (0-based ascending).
+   * When present, the gallery should sort by this value before rendering.
+   * Omitted for statically-ordered arrays where position is the implicit order.
+   */
+  order?: number;
+
+  /**
+   * Whether this image should be displayed in the gallery.
+   * Defaults to true (visible) when omitted so that all existing images without this field remain visible.
+   */
+  isVisible?: boolean;
+
+  /**
+   * Lifecycle state.
+   * Omitted for legacy/static images, which are treated as "active" implicitly.
+   */
+  status?: TourismImageStatus;
 };
 
 export type TourismOpeningPeriod = {
