@@ -1,0 +1,55 @@
+rules_version = '2';
+
+// ============================================================================
+// India Tourism Discovery — Firebase Storage Security Rules
+//
+// Deploy with:
+//   firebase deploy --only storage
+//
+// Bucket layout enforced by these rules:
+//
+//   tourism/places/{placeId}/images/{imageId}
+//
+// Security posture:
+//   – Public READ is allowed for tourism place images only.
+//     This enables the gallery to load images directly from Storage URLs
+//     without requiring authentication for viewing content.
+//
+//   – WRITE (upload, replace, delete) is DENIED for all clients in these
+//     rules. Admin media writes will be performed through a privileged
+//     server-side pathway (Firebase Admin SDK via a secure server route or
+//     Cloud Function) in a future phase. Client-side writes are explicitly
+//     rejected here.
+//
+//   – All other paths in the bucket are fully restricted (deny all).
+//
+// IMPORTANT: These rules intentionally do NOT grant any write access to
+// clients. Do not add "allow write: if request.auth != null" without first
+// implementing proper role-based access control (custom claims or a Firestore
+// admin role check). Adding broad auth-gated write rules would allow any
+// authenticated user to upload or delete files.
+// ============================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // -------------------------------------------------------------------------
+    // Tourism place image assets
+    // -------------------------------------------------------------------------
+    match /tourism/places/{placeId}/images/{imageId} {
+      // Public read: gallery displays images without requiring sign-in.
+      allow read: if true;
+
+      // Write is explicitly denied for all clients.
+      // Admin uploads will go through a privileged server route (Phase 3).
+      allow write: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // Default: deny everything not matched above.
+    // -------------------------------------------------------------------------
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

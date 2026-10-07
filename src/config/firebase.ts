@@ -8,3 +8,10 @@ export const firebaseConfig = {
 } as const;
 
 export const hasFirebaseConfig = Object.values(firebaseConfig).every(Boolean);
+
+/**
+ * True only when both the full Firebase config is present AND a Storage bucket
+ * URL is configured. Use this guard before calling any Storage operations.
+ */
+export const hasFirebaseStorageConfig =
+  hasFirebaseConfig && Boolean(firebaseConfig.storageBucket);
