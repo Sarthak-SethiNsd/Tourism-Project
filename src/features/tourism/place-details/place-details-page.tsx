@@ -40,7 +40,7 @@ import { CurrentWeather } from "@/features/tourism/place-details/current-weather
 import { BackToExploreButton } from "@/features/tourism/place-details/back-to-explore-button";
 import { PlaceGallery } from "@/features/tourism/place-details/place-gallery";
 import { createMapplsPlaceUrl } from "@/features/tourism/utils/mappls-deep-links";
-import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace } from "@/features/tourism/types";
+import type { IndianDistrict, IndianRegion, NearbyPlace, TourismCategory, TourismPlace, TourismPlaceImage } from "@/features/tourism/types";
 
 type PlaceDetailsPageProps = {
   place: TourismPlace;
@@ -337,26 +337,53 @@ function formatTypes(tags: string[], categories: TourismCategory[]) {
   return values.length ? values.map((value) => value.replaceAll("_", " ")).join(", ") : "Types not available";
 }
 
-function getLocalGalleryImages(place: TourismPlace) {
-  const curatedImages =
+function getLocalGalleryImages(place: TourismPlace): TourismPlaceImage[] {
+  // 1. Filter out images that are explicitly hidden or archived
+  const activeImages =
     place.images?.filter(
       (image) =>
-        image.source !== "mappls" &&
         image.isVisible !== false &&
         image.status !== "archived",
     ) ?? [];
 
-  if (curatedImages.length) {
-    // Sort by explicit order when present; otherwise preserve array position.
-    return [...curatedImages].sort((a, b) => {
+  // 2. If valid images exist, sort deterministically by explicit order, then deduplicate
+  if (activeImages.length > 0) {
+    const sorted = [...activeImages].sort((a, b) => {
       if (a.order !== undefined && b.order !== undefined) return a.order - b.order;
       if (a.order !== undefined) return -1;
       if (b.order !== undefined) return 1;
       return 0;
     });
+
+    // Deduplicate by URL while preserving the sorted order
+    const seenUrls = new Set<string>();
+    const deduplicated: TourismPlaceImage[] = [];
+
+    for (const image of sorted) {
+      const normalizedUrl = image.url.trim();
+      if (!normalizedUrl || seenUrls.has(normalizedUrl)) continue;
+      seenUrls.add(normalizedUrl);
+      deduplicated.push(image);
+    }
+
+    if (deduplicated.length > 0) {
+      return deduplicated;
+    }
   }
 
-  return place.imageUrl && !place.mapplsPlaceId ? [{ url: place.imageUrl, alt: place.name, source: "local" as const }] : [];
+  // 3. Fallback: if no curated images exist, use place.imageUrl as the single image fallback
+  if (place.imageUrl && place.imageUrl.trim()) {
+    return [
+      {
+        url: place.imageUrl.trim(),
+        alt: place.name,
+        source: place.mapplsPlaceId ? ("mappls" as const) : ("local" as const),
+      },
+    ];
+  }
+
+  // 4. No valid image available: return empty array for empty-gallery state
+  return [];
 }
 
 function formatNearbyCategory(category: NearbyPlace["category"]) {

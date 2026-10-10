@@ -24,6 +24,29 @@ export const tourismPlaces: TourismPlace[] = [
     tags: ["fort", "architecture", "jaipur", "history"],
     isFeatured: true,
     imageUrl: defaultImage,
+    images: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Amber_Fort_on_the_hills_of_Jaipur.JPG",
+        alt: "Amber Fort perched on the rugged Aravalli hills overlooking Maota Lake",
+        attribution: "Wikimedia Commons / Vjdchauhan / CC BY-SA 3.0",
+        order: 0,
+        source: "local",
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/b/b6/Amber_Fort_front.jpg",
+        alt: "Front panoramic view of Amber Fort ramparts and gates",
+        attribution: "Wikimedia Commons / Firoozeh / CC BY-SA 4.0",
+        order: 1,
+        source: "local",
+      },
+      {
+        url: defaultImage,
+        alt: "Amber Fort overview",
+        attribution: "Curated collection",
+        order: 2,
+        source: "local",
+      },
+    ],
   },
   {
     id: "city-palace-udaipur",
@@ -41,6 +64,22 @@ export const tourismPlaces: TourismPlace[] = [
     rating: 4.7,
     tags: ["palace", "lake", "museum", "udaipur"],
     imageUrl: defaultImage,
+    images: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/4/4d/City_palace%2C_Udaipur.JPG",
+        alt: "City Palace Udaipur facade rising above Lake Pichola",
+        attribution: "Wikimedia Commons / G41rn8 / CC BY-SA 4.0",
+        order: 0,
+        source: "local",
+      },
+      {
+        url: defaultImage,
+        alt: "City Palace courtyard view",
+        attribution: "Curated collection",
+        order: 1,
+        source: "local",
+      },
+    ],
   },
   {
     id: "taj-mahal-agra",
@@ -59,6 +98,22 @@ export const tourismPlaces: TourismPlace[] = [
     tags: ["unesco", "mausoleum", "agra", "marble"],
     isFeatured: true,
     imageUrl: defaultImage,
+    images: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Taj_Mahal%2C_Agra%2C_India_edit3.jpg",
+        alt: "Taj Mahal reflecting pool and marble dome in Agra",
+        attribution: "Wikimedia Commons / Yann Forget / CC BY-SA 4.0",
+        order: 0,
+        source: "local",
+      },
+      {
+        url: defaultImage,
+        alt: "Taj Mahal gardens and minarets",
+        attribution: "Curated collection",
+        order: 1,
+        source: "local",
+      },
+    ],
   },
   {
     id: "dashashwamedh-ghat-varanasi",
@@ -76,6 +131,22 @@ export const tourismPlaces: TourismPlace[] = [
     rating: 4.7,
     tags: ["ghat", "aarti", "varanasi", "river"],
     imageUrl: defaultImage,
+    images: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/0/09/Evening_Ganga_Aarti_at_Dashashwamedh_Ghat.JPG",
+        alt: "Evening Ganga Aarti ritual with brass lamps at Dashashwamedh Ghat",
+        attribution: "Wikimedia Commons / Abhishek.cty / CC BY-SA 3.0",
+        order: 0,
+        source: "local",
+      },
+      {
+        url: defaultImage,
+        alt: "Dashashwamedh Ghat river steps",
+        attribution: "Curated collection",
+        order: 1,
+        source: "local",
+      },
+    ],
   },
   {
     id: "munnar-tea-gardens",
@@ -94,6 +165,22 @@ export const tourismPlaces: TourismPlace[] = [
     tags: ["tea", "hills", "western ghats", "munnar"],
     isFeatured: true,
     imageUrl: defaultImage,
+    images: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/0/09/Munnar_-_Tea_Plantations.jpg",
+        alt: "Lush green rolling tea plantations across Munnar hills",
+        attribution: "Wikimedia Commons / Bimal K C / CC BY-SA 4.0",
+        order: 0,
+        source: "local",
+      },
+      {
+        url: defaultImage,
+        alt: "Munnar tea estate misty morning",
+        attribution: "Curated collection",
+        order: 1,
+        source: "local",
+      },
+    ],
   },
   {
     id: "alleppey-backwaters",
@@ -111,6 +198,22 @@ export const tourismPlaces: TourismPlace[] = [
     rating: 4.6,
     tags: ["backwaters", "houseboat", "lake", "alappuzha"],
     imageUrl: defaultImage,
+    images: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Alleppey_Boat_houses.jpg",
+        alt: "Traditional kettuvallam houseboats moored along palm-fringed backwaters in Alleppey",
+        attribution: "Wikimedia Commons / Ramnath Bhat / CC BY 2.0",
+        order: 0,
+        source: "local",
+      },
+      {
+        url: defaultImage,
+        alt: "Alleppey canals and coconut groves",
+        attribution: "Curated collection",
+        order: 1,
+        source: "local",
+      },
+    ],
   },
   {
     id: "baga-beach-goa",
@@ -128,6 +231,22 @@ export const tourismPlaces: TourismPlace[] = [
     rating: 4.4,
     tags: ["beach", "nightlife", "north goa", "food"],
     imageUrl: defaultImage,
+    images: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/f/fd/Goa_Beach_-_Baga_Beach.jpg",
+        alt: "Sandy coastline, ocean waves, and beach shacks at Baga Beach Goa",
+        attribution: "Wikimedia Commons / Aaron C / CC BY-SA 2.0",
+        order: 0,
+        source: "local",
+      },
+      {
+        url: defaultImage,
+        alt: "Baga Beach sunset view",
+        attribution: "Curated collection",
+        order: 1,
+        source: "local",
+      },
+    ],
   },
   {
     id: "fontainhas-panaji",
