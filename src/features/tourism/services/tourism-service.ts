@@ -818,6 +818,57 @@ export async function getNearbyTourismPlaces(
   return tourismService.getNearbyPlaces(latitude, longitude, radius, category, signal);
 }
 
+export type NearbyTransitHubs = {
+  railwayStations: NearbyPlace[];
+  busStations: NearbyPlace[];
+  airports: NearbyPlace[];
+};
+
+export async function getNearbyTransitHubs(
+  latitude: number,
+  longitude: number,
+  signal?: AbortSignal,
+): Promise<NearbyTransitHubs> {
+  const [railwayResult, busResult, airportResult] = await Promise.allSettled([
+    getNearbyTourismPlaces(latitude, longitude, 15000, "railway stations", signal),
+    getNearbyTourismPlaces(latitude, longitude, 15000, "bus stations", signal),
+    getNearbyTourismPlaces(latitude, longitude, 30000, "airports", signal),
+  ]);
+
+  const deduplicateByName = (places: NearbyPlace[]): NearbyPlace[] => {
+    const seen = new Set<string>();
+    const deduplicated: NearbyPlace[] = [];
+    for (const place of places) {
+      const normalized = place.name.trim().toLowerCase();
+      if (!normalized || seen.has(normalized)) continue;
+      seen.add(normalized);
+      deduplicated.push(place);
+    }
+    return deduplicated;
+  };
+
+  const railwayStations =
+    railwayResult.status === "fulfilled" && Array.isArray(railwayResult.value)
+      ? deduplicateByName(railwayResult.value).slice(0, 3)
+      : [];
+
+  const busStations =
+    busResult.status === "fulfilled" && Array.isArray(busResult.value)
+      ? deduplicateByName(busResult.value).slice(0, 3)
+      : [];
+
+  const airports =
+    airportResult.status === "fulfilled" && Array.isArray(airportResult.value)
+      ? deduplicateByName(airportResult.value).slice(0, 2)
+      : [];
+
+  return {
+    railwayStations,
+    busStations,
+    airports,
+  };
+}
+
 export async function getCurrentTourismWeather(latitude: number, longitude: number): Promise<CurrentWeather | null> {
   return tourismService.getCurrentWeather(latitude, longitude);
 }

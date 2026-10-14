@@ -134,6 +134,17 @@ export type TourismPlaceReview = {
   publishTime?: string;
 };
 
+export type TourismTransitGuidance = {
+  /** e.g. "Nearest major station: Jaipur Junction (12 km)" */
+  rail?: string;
+  /** e.g. "Rajasthan SRTC buses from Jaipur Sindhi Camp" */
+  road?: string;
+  /** e.g. "Jaipur International Airport (15 km)" */
+  air?: string;
+  /** e.g. "Auto-rickshaws and taxis from Jaipur city" */
+  local?: string;
+};
+
 export type TourismPlace = {
   id: EntityId;
   name: string;
@@ -170,6 +181,7 @@ export type TourismPlace = {
   facilities?: string[];
   distanceText?: string;
   travelTimeText?: string;
+  transitGuidance?: TourismTransitGuidance;
 };
 
 export type TourismLocationFilter = {

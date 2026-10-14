@@ -47,6 +47,12 @@ export const tourismPlaces: TourismPlace[] = [
         source: "local",
       },
     ],
+    transitGuidance: {
+      rail: "Jaipur Junction Railway Station (~11 km)",
+      road: "Rajasthan SRTC buses and shared autos connect from Jaipur Sindhi Camp bus stand",
+      air: "Jaipur International Airport (~20 km)",
+      local: "Auto-rickshaws, city buses, and app-based taxis from Jaipur city centre",
+    },
   },
   {
     id: "city-palace-udaipur",
@@ -114,6 +120,12 @@ export const tourismPlaces: TourismPlace[] = [
         source: "local",
       },
     ],
+    transitGuidance: {
+      rail: "Agra Cantt. Railway Station (~5 km) and Agra Fort Railway Station (~3 km)",
+      road: "Agra ISBT bus station connects major North Indian cities via Yamuna Expressway",
+      air: "Agra Airport (~13 km); Indira Gandhi International Airport, New Delhi (~230 km)",
+      local: "Battery-operated e-rickshaws, golf carts, and prepaid taxis available at parking gates",
+    },
   },
   {
     id: "dashashwamedh-ghat-varanasi",
@@ -147,6 +159,12 @@ export const tourismPlaces: TourismPlace[] = [
         source: "local",
       },
     ],
+    transitGuidance: {
+      rail: "Varanasi Junction (Cantt) Railway Station (~5 km) and Banaras Railway Station (~5 km)",
+      road: "Chaudhary Charan Singh Bus Stand (Cantt) connects major UP routes",
+      air: "Lal Bahadur Shastri International Airport, Babatpur (~26 km)",
+      local: "Cycle-rickshaws, e-rickshaws to Godowlia Chowk, followed by a short walk through pedestrian lanes to the ghat",
+    },
   },
   {
     id: "munnar-tea-gardens",
@@ -181,6 +199,12 @@ export const tourismPlaces: TourismPlace[] = [
         source: "local",
       },
     ],
+    transitGuidance: {
+      rail: "Aluva Railway Station (~110 km) and Ernakulam Junction (~130 km)",
+      road: "Kerala SRTC (KSRTC) buses connect Munnar from Kochi, Kottayam, and Madurai",
+      air: "Cochin International Airport (COK) (~110 km)",
+      local: "Local KSRTC town buses, jeeps, and private taxis for plantation exploration",
+    },
   },
   {
     id: "alleppey-backwaters",
@@ -214,6 +238,12 @@ export const tourismPlaces: TourismPlace[] = [
         source: "local",
       },
     ],
+    transitGuidance: {
+      rail: "Alappuzha Railway Station (~4 km)",
+      road: "KSRTC Bus Station Alappuzha connects regular services to Kochi, Kollam, and Thiruvananthapuram",
+      air: "Cochin International Airport (COK) (~84 km)",
+      local: "Auto-rickshaws, public SWTD ferry boats across backwater channels, and pre-booked shikara/houseboat pickups",
+    },
   },
   {
     id: "baga-beach-goa",
