@@ -23,9 +23,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   getNearbyTourismPlaces,
   getNearbyTransitHubs,
+  getTourismEventsForPlace,
   getTourismTravelInfo,
 } from "@/features/tourism/services/tourism-service";
 import { PublicTransportationSection } from "@/features/tourism/place-details/public-transportation-section";
+import { EventsFestivalsSection } from "@/features/tourism/place-details/events-festivals-section";
 import { PlaceReviews } from "@/features/tourism/place-details/place-reviews";
 import { SavePlaceButton } from "@/features/tourism/place-details/save-place-button";
 import { SharePlaceButton } from "@/features/tourism/place-details/share-place-button";
@@ -69,16 +71,19 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
     : undefined;
   const address = formatAddress(place, district, region);
   const galleryImages = getLocalGalleryImages(place);
-  const [nearbyAttractions, transitHubs] = hasCoordinates
-    ? await Promise.all([
-        getNearbyTourismPlaces(latitude, longitude, DEFAULT_NEARBY_RADIUS_METERS, "tourist attractions"),
-        getNearbyTransitHubs(latitude, longitude).catch(() => ({
+  const [nearbyAttractions, transitHubs, events] = await Promise.all([
+    hasCoordinates
+      ? getNearbyTourismPlaces(latitude, longitude, DEFAULT_NEARBY_RADIUS_METERS, "tourist attractions")
+      : Promise.resolve([]),
+    hasCoordinates
+      ? getNearbyTransitHubs(latitude, longitude).catch(() => ({
           railwayStations: [],
           busStations: [],
           airports: [],
-        })),
-      ])
-    : [[], { railwayStations: [], busStations: [], airports: [] }];
+        }))
+      : Promise.resolve({ railwayStations: [], busStations: [], airports: [] }),
+    getTourismEventsForPlace(place),
+  ]);
   const travelInfo =
     hasCoordinates && nearbyAttractions[0]
       ? await getTourismTravelInfo({ latitude, longitude }, nearbyAttractions[0].coordinates, "driving")
@@ -232,6 +237,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
           busStations={transitHubs.busStations}
           airports={transitHubs.airports}
         />
+        <EventsFestivalsSection place={place} events={events} />
         <PlaceReviews reviews={place.reviews} />
         <NearbyPlaces attractions={nearbyAttractions.filter((attraction) => attraction.id !== place.id).slice(0, 10)} />
       </main>

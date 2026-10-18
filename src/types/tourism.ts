@@ -145,6 +145,51 @@ export type TourismTransitGuidance = {
   local?: string;
 };
 
+export type TourismEventCategory =
+  | "cultural"
+  | "spiritual"
+  | "music_arts"
+  | "seasonal"
+  | "heritage"
+  | "fair_mela";
+
+export type TourismEventRecurrence =
+  | "annual"
+  | "seasonal"
+  | "daily"
+  | "date_specific";
+
+export type TourismEventEdition = {
+  year: number;
+  startDate: string;
+  endDate: string;
+  isConfirmed: boolean;
+};
+
+export type TourismEvent = {
+  id: EntityId;
+  name: string;
+  category: TourismEventCategory;
+  recurrence: TourismEventRecurrence;
+  /** Primary human-readable timing (e.g. "October / November (Kartik Purnima)" or "Late February") */
+  periodDescription: string;
+  /** Optional confirmed dates for a specific calendar year */
+  confirmedEdition?: TourismEventEdition;
+  /** Direct association to specific places */
+  placeIds?: EntityId[];
+  /** Association to district (e.g. "rajasthan-jaipur") */
+  districtId?: EntityId;
+  /** Association to state (e.g. "rajasthan") */
+  stateId: EntityId;
+  /** Specific venue or gathering point within the destination or city */
+  venue?: string;
+  summary: string;
+  culturalSignificance?: string;
+  tips?: string[];
+  officialWebsiteUrl?: string;
+  isMajorFestival?: boolean;
+};
+
 export type TourismPlace = {
   id: EntityId;
   name: string;

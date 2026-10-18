@@ -14,6 +14,10 @@ export type {
   TourismPlaceReview,
   TourismPriceLevel,
   TourismTransitGuidance,
+  TourismEvent,
+  TourismEventCategory,
+  TourismEventEdition,
+  TourismEventRecurrence,
 } from "@/types/tourism";
 export type { IndianDistrict, IndianRegion, ExploreScope, LocationSelection, RegionType } from "@/features/tourism/types/region";
 export type {
