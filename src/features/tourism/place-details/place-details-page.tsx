@@ -25,6 +25,7 @@ import {
   getNearbyTransitHubs,
   getTourismEventsForPlace,
   getTourismTravelInfo,
+  resolvePlaceTransitGuidance,
 } from "@/features/tourism/services/tourism-service";
 import { PublicTransportationSection } from "@/features/tourism/place-details/public-transportation-section";
 import { EventsFestivalsSection } from "@/features/tourism/place-details/events-festivals-section";
@@ -71,6 +72,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
     : undefined;
   const address = formatAddress(place, district, region);
   const galleryImages = getLocalGalleryImages(place);
+  const resolvedTransitGuidance = resolvePlaceTransitGuidance(place, district);
   const [nearbyAttractions, transitHubs, events] = await Promise.all([
     hasCoordinates
       ? getNearbyTourismPlaces(latitude, longitude, DEFAULT_NEARBY_RADIUS_METERS, "tourist attractions")
@@ -233,6 +235,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
         </section>
         <PublicTransportationSection
           place={place}
+          resolvedGuidance={resolvedTransitGuidance}
           railwayStations={transitHubs.railwayStations}
           busStations={transitHubs.busStations}
           airports={transitHubs.airports}

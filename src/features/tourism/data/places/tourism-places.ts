@@ -86,6 +86,12 @@ export const tourismPlaces: TourismPlace[] = [
         source: "local",
       },
     ],
+    transitGuidance: {
+      rail: "Udaipur City Railway Station (~3 km) is the primary railhead connecting Rajasthan and West India.",
+      road: "Udaipur Central Bus Stand (Udiapole) connects major state routes; local autos run to Jagdish Chowk.",
+      air: "Maharana Pratap Airport Dabok (~24 km) connects commercial flights from Delhi, Mumbai, and Jaipur.",
+      local: "Auto-rickshaws, battery-operated e-rickshaws, and walking through the narrow heritage lanes of the old city.",
+    },
   },
   {
     id: "taj-mahal-agra",
@@ -277,6 +283,12 @@ export const tourismPlaces: TourismPlace[] = [
         source: "local",
       },
     ],
+    transitGuidance: {
+      rail: "Thivim Railway Station (~19 km) and Karmali (~28 km) are the closest Konkan Railway stations.",
+      road: "Connected via Calangute–Baga coastal roads with regular buses from Mapusa and Panaji KTC bus stands.",
+      air: "Manohar International Airport at Mopa (~30 km) and Dabolim Airport (~43 km).",
+      local: "Rental scooters, self-drive cars, local tourist taxis, and auto-rickshaws.",
+    },
   },
   {
     id: "fontainhas-panaji",
@@ -294,6 +306,12 @@ export const tourismPlaces: TourismPlace[] = [
     rating: 4.5,
     tags: ["panaji", "heritage walk", "cafes", "goa"],
     imageUrl: defaultImage,
+    transitGuidance: {
+      rail: "Karmali Railway Station (~12 km) is the nearest station; Thivim (~24 km) is also accessible.",
+      road: "Panaji KTC Central Bus Terminal (~1.5 km) operates express buses to all parts of Goa and neighboring states.",
+      air: "Dabolim Airport (~27 km) and Manohar International Airport Mopa (~32 km).",
+      local: "Easily explored on foot; local auto-rickshaws, pilot bikes, and municipal buses connect to other parts of Panaji.",
+    },
   },
   {
     id: "mysore-palace",
@@ -311,6 +329,12 @@ export const tourismPlaces: TourismPlace[] = [
     rating: 4.7,
     tags: ["palace", "mysuru", "royal", "architecture"],
     imageUrl: defaultImage,
+    transitGuidance: {
+      rail: "Mysuru Junction Railway Station (~2 km) connects directly to Bengaluru and South Indian cities.",
+      road: "Mysuru KSRTC Suburban Bus Stand (~1.5 km) connects major state routes; city buses stop right beside palace gates.",
+      air: "Mysuru Domestic Airport (~11 km); Kempegowda International Airport Bengaluru (~175 km) is the primary international hub.",
+      local: "City buses, prepaid auto-rickshaws, and heritage horse-drawn tongas around the palace perimeter.",
+    },
   },
   {
     id: "hampi-ruins",
@@ -329,6 +353,12 @@ export const tourismPlaces: TourismPlace[] = [
     tags: ["unesco", "temples", "ruins", "hampi"],
     isFeatured: true,
     imageUrl: defaultImage,
+    transitGuidance: {
+      rail: "Hosapete Junction (HPT) (~13 km) is the primary railhead connecting Bengaluru, Hyderabad, and Goa.",
+      road: "KSRTC buses connect Hosapete to Hampi Bazaar regularly throughout the day.",
+      air: "Jindal Vijayanagar Airport Bellary (~35 km) operates select flights; Hubballi Airport (~145 km) provides scheduled commercial flights.",
+      local: "Auto-rickshaws, rental bicycles, electric buggies at Vittala temple, and coracle river boats at the Tungabhadra.",
+    },
   },
   {
     id: "gateway-of-india",
@@ -380,6 +410,12 @@ export const tourismPlaces: TourismPlace[] = [
     rating: 4.6,
     tags: ["delhi", "monument", "capital", "evening"],
     imageUrl: defaultImage,
+    transitGuidance: {
+      rail: "New Delhi Railway Station (~4 km) and Hazrat Nizamuddin (~5 km).",
+      road: "Located on Kartavya Path (Central Vista); well connected by Delhi Transport Corporation (DTC) bus routes.",
+      air: "Indira Gandhi International Airport (~14 km) via Airport Express Metro and Delhi Aerocity.",
+      local: "Central Secretariat Metro Station (~1.5 km) on Yellow/Violet lines, electric autos, and app-based cabs.",
+    },
   },
   {
     id: "qutub-minar",
@@ -397,6 +433,12 @@ export const tourismPlaces: TourismPlace[] = [
     rating: 4.6,
     tags: ["unesco", "delhi", "minaret", "history"],
     imageUrl: defaultImage,
+    transitGuidance: {
+      rail: "Hazrat Nizamuddin Railway Station (~14 km) and New Delhi Railway Station (~16 km).",
+      road: "Mehrauli–Badarpur Road connects major South Delhi arterial routes and DTC bus lines.",
+      air: "Indira Gandhi International Airport (~12 km) via Mahipalpur / Vasant Kunj.",
+      local: "Qutab Minar Metro Station (~1.5 km) on Yellow Line, battery-operated e-rickshaws, and auto-rickshaws.",
+    },
   },
   {
     id: "naini-lake",
@@ -465,6 +507,12 @@ export const tourismPlaces: TourismPlace[] = [
     rating: 4.8,
     tags: ["temple", "madurai", "gopuram", "spiritual"],
     imageUrl: defaultImage,
+    transitGuidance: {
+      rail: "Madurai Junction Railway Station (~1.5 km) connects directly to Chennai, Bengaluru, and Kanyakumari.",
+      road: "Periyar Bus Stand (~1 km) connects local city routes; Mattuthavani Integrated Bus Stand (~6 km) for intercity travel.",
+      air: "Madurai International Airport (~11 km) operates regular flights to major Indian metros and Colombo/Dubai.",
+      local: "Auto-rickshaws, cycle-rickshaws, and walking through the four concentric Masi/Chitrai pedestrian market streets.",
+    },
   },
 ];
 

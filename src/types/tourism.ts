@@ -143,6 +143,10 @@ export type TourismTransitGuidance = {
   air?: string;
   /** e.g. "Auto-rickshaws and taxis from Jaipur city" */
   local?: string;
+  /** Origin scope of the transit guidance */
+  sourceLevel?: "destination" | "district";
+  /** Context name when inherited from a district or regional hub */
+  districtName?: string;
 };
 
 export type TourismEventCategory =

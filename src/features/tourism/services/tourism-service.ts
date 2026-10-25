@@ -105,7 +105,12 @@ import type {
 import type { IndianDistrict, IndianRegion } from "@/features/tourism/types/region";
 import { filterTourismPlaces } from "@/features/tourism/utils/place-filters";
 import { curatedTourismEvents } from "@/features/tourism/data/events/tourism-events";
-import type { TourismCategory, TourismEvent, TourismLocationFilter, TourismPlace } from "@/types/tourism";
+import type {
+  TourismCategory,
+  TourismEvent,
+  TourismLocationFilter,
+  TourismPlace,
+} from "@/types/tourism";
 
 type PlaceSearchHistoryContext = {
   district?: IndianDistrict;
@@ -1017,6 +1022,7 @@ export async function getDistanceMatrix(requests: TourismRouteRequest[]): Promis
   return tourismService.getDistanceMatrix(requests);
 }
 
+export { resolvePlaceTransitGuidance } from "@/features/tourism/services/transit-guidance-resolver";
 export { filterTourismPlaces };
 
 export function createTourismService(provider: TourismProvider) {

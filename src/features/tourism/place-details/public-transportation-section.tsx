@@ -1,15 +1,16 @@
 import Link from "next/link";
-import { Train, Bus, Plane, Car, MapPin, Navigation, ExternalLink } from "lucide-react";
+import { Train, Bus, Plane, Car, MapPin, Navigation, ExternalLink, Info } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/shared/section-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { createMapplsDirectionsUrl } from "@/features/tourism/utils/mappls-deep-links";
-import type { NearbyPlace, TourismPlace } from "@/features/tourism/types";
+import type { NearbyPlace, TourismPlace, TourismTransitGuidance } from "@/features/tourism/types";
 
 type PublicTransportationSectionProps = {
   place: TourismPlace;
+  resolvedGuidance?: TourismTransitGuidance;
   railwayStations?: NearbyPlace[];
   busStations?: NearbyPlace[];
   airports?: NearbyPlace[];
@@ -17,6 +18,7 @@ type PublicTransportationSectionProps = {
 
 export function PublicTransportationSection({
   place,
+  resolvedGuidance,
   railwayStations = [],
   busStations = [],
   airports = [],
@@ -25,16 +27,21 @@ export function PublicTransportationSection({
   const longitude = place.coordinates?.longitude;
   const hasCoordinates = typeof latitude === "number" && typeof longitude === "number";
 
-  const totalHubsCount = railwayStations.length + busStations.length + airports.length;
-  const hasTransitGuidance = Boolean(
-    place.transitGuidance &&
-      (place.transitGuidance.rail ||
-        place.transitGuidance.road ||
-        place.transitGuidance.air ||
-        place.transitGuidance.local),
+  // Active guidance falls back to place.transitGuidance if resolvedGuidance wasn't explicitly provided
+  const guidance = resolvedGuidance ?? place.transitGuidance;
+  const isDistrictInherited = guidance?.sourceLevel === "district";
+
+  const hasGuidanceContent = Boolean(
+    guidance &&
+      ((guidance.rail && guidance.rail.trim().length > 0) ||
+        (guidance.road && guidance.road.trim().length > 0) ||
+        (guidance.air && guidance.air.trim().length > 0) ||
+        (guidance.local && guidance.local.trim().length > 0)),
   );
 
-  if (!hasCoordinates && !hasTransitGuidance) {
+  const totalHubsCount = railwayStations.length + busStations.length + airports.length;
+
+  if (!hasCoordinates && !hasGuidanceContent) {
     return (
       <section className="space-y-4">
         <SectionHeader
@@ -52,70 +59,113 @@ export function PublicTransportationSection({
 
   return (
     <section className="space-y-6">
-      <SectionHeader
-        eyebrow="Transit"
-        title="Public Transportation"
-        description="Public transit connectivity, nearby stations, and travel options to reach this destination."
-      />
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <SectionHeader
+          eyebrow="Transit"
+          title="Public Transportation"
+          description="Public transit connectivity, nearby stations, and travel options to reach this destination."
+        />
+        {isDistrictInherited && (
+          <Badge
+            variant="outline"
+            className="w-fit text-xs font-normal border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300"
+          >
+            Regional Connectivity ({guidance.districtName || place.districtName || "District"})
+          </Badge>
+        )}
+      </div>
 
       {/* 1. Curated Transit Guidance */}
-      {hasTransitGuidance && place.transitGuidance && (
-        <div className="grid gap-4 md:grid-cols-2">
-          {place.transitGuidance.rail && (
-            <Card className="border-primary/10 shadow-sm">
-              <CardContent className="flex items-start gap-3.5 p-4 sm:p-5">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Train className="size-5" aria-hidden />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-sm font-semibold text-foreground">By Train</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{place.transitGuidance.rail}</p>
-                </div>
-              </CardContent>
-            </Card>
+      {hasGuidanceContent && guidance && (
+        <div className="space-y-3">
+          {isDistrictInherited && (
+            <div className="flex items-start gap-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3.5 text-xs text-amber-900 dark:text-amber-200">
+              <Info className="size-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" aria-hidden />
+              <p className="leading-relaxed">
+                Showing verified regional transit corridors for{" "}
+                <span className="font-semibold">{guidance.districtName || place.districtName || "this district"}</span>.
+                These transit hubs serve the wider district and connecting travel may be required to reach {place.name}.
+              </p>
+            </div>
           )}
 
-          {place.transitGuidance.road && (
-            <Card className="border-primary/10 shadow-sm">
-              <CardContent className="flex items-start gap-3.5 p-4 sm:p-5">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Bus className="size-5" aria-hidden />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-sm font-semibold text-foreground">By Road / Bus</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{place.transitGuidance.road}</p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <div className="grid gap-4 md:grid-cols-2">
+            {guidance.rail && guidance.rail.trim().length > 0 && (
+              <Card className="border-primary/10 shadow-sm transition-all hover:border-primary/25">
+                <CardContent className="flex items-start gap-3.5 p-4 sm:p-5">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Train className="size-5" aria-hidden />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-foreground">By Train</h4>
+                      {isDistrictInherited && (
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Regional Hub</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{guidance.rail}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-          {place.transitGuidance.air && (
-            <Card className="border-primary/10 shadow-sm">
-              <CardContent className="flex items-start gap-3.5 p-4 sm:p-5">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Plane className="size-5" aria-hidden />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-sm font-semibold text-foreground">By Air</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{place.transitGuidance.air}</p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+            {guidance.road && guidance.road.trim().length > 0 && (
+              <Card className="border-primary/10 shadow-sm transition-all hover:border-primary/25">
+                <CardContent className="flex items-start gap-3.5 p-4 sm:p-5">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Bus className="size-5" aria-hidden />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-foreground">By Road / Bus</h4>
+                      {isDistrictInherited && (
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Regional Bus Corridor</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{guidance.road}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-          {place.transitGuidance.local && (
-            <Card className="border-primary/10 shadow-sm">
-              <CardContent className="flex items-start gap-3.5 p-4 sm:p-5">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Car className="size-5" aria-hidden />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-sm font-semibold text-foreground">Local Transit & Commute</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{place.transitGuidance.local}</p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+            {guidance.air && guidance.air.trim().length > 0 && (
+              <Card className="border-primary/10 shadow-sm transition-all hover:border-primary/25">
+                <CardContent className="flex items-start gap-3.5 p-4 sm:p-5">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Plane className="size-5" aria-hidden />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-foreground">By Air</h4>
+                      {isDistrictInherited && (
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Regional Airport</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{guidance.air}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {guidance.local && guidance.local.trim().length > 0 && (
+              <Card className="border-primary/10 shadow-sm transition-all hover:border-primary/25">
+                <CardContent className="flex items-start gap-3.5 p-4 sm:p-5">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Car className="size-5" aria-hidden />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-foreground">Local Transit & Commute</h4>
+                      {isDistrictInherited && (
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">District Network</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{guidance.local}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       )}
 
@@ -182,7 +232,7 @@ export function PublicTransportationSection({
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              No live transit hubs identified nearby. Refer to the regional transit overview above.
+              No live transit hubs identified within immediate search radius. Refer to the regional transit overview above.
             </p>
           )}
         </div>
