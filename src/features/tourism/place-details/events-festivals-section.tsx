@@ -59,13 +59,20 @@ export function EventsFestivalsSection({
     );
   }
 
+  const isStateFallbackOnly = events.every((event) => event.scopeLevel === "state");
+  const stateContextName = events[0]?.regionContextName || place.stateId;
+
+  const sectionDescription = isStateFallbackOnly
+    ? `Explore prominent cultural heritage and state-wide celebrations across ${stateContextName}.`
+    : `Experience authentic living culture and traditional festivals in and around ${place.name}.`;
+
   return (
     <section className="space-y-6">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <SectionHeader
           eyebrow="Culture & Celebrations"
           title="Events & Festivals"
-          description={`Experience authentic living culture and traditional festivals in and around ${place.name}.`}
+          description={sectionDescription}
         />
         <Badge
           variant="outline"
@@ -91,7 +98,11 @@ function EventCard({
   event: TourismEvent;
   currentPlaceId: string;
 }) {
-  const isDirectMatch = event.placeIds?.includes(currentPlaceId);
+  const isDirectMatch =
+    event.scopeLevel === "destination" || (event.placeIds && event.placeIds.includes(currentPlaceId));
+  const isDistrictMatch = event.scopeLevel === "district";
+  const isStateFallback = event.scopeLevel === "state";
+
   const categoryLabel = categoryLabelMap[event.category] ?? "Cultural";
   const recurrenceLabel = recurrenceLabelMap[event.recurrence] ?? "Event";
 
@@ -114,6 +125,22 @@ function EventCard({
               <Badge className="bg-primary/10 text-primary hover:bg-primary/20 text-xs font-medium border-0">
                 <Sparkles className="mr-1 size-3" aria-hidden />
                 At this destination
+              </Badge>
+            )}
+            {isDistrictMatch && (
+              <Badge
+                variant="outline"
+                className="text-xs font-normal border-blue-500/30 bg-blue-500/10 text-blue-800 dark:text-blue-300"
+              >
+                District Celebration ({event.regionContextName || "District"})
+              </Badge>
+            )}
+            {isStateFallback && (
+              <Badge
+                variant="outline"
+                className="text-xs font-normal border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300"
+              >
+                State Cultural Heritage ({event.regionContextName || "State"})
               </Badge>
             )}
           </div>
@@ -209,6 +236,7 @@ function EventCard({
                 href={event.officialWebsiteUrl}
                 target="_blank"
                 rel="noreferrer"
+                aria-label={`Official tourism details for ${event.name}`}
               >
                 <span>Official Tourism Details</span>
                 <ExternalLink className="size-3 opacity-70" aria-hidden />

@@ -163,6 +163,8 @@ export type TourismEventRecurrence =
   | "daily"
   | "date_specific";
 
+export type TourismEventScopeLevel = "destination" | "district" | "state";
+
 export type TourismEventEdition = {
   year: number;
   startDate: string;
@@ -192,6 +194,10 @@ export type TourismEvent = {
   tips?: string[];
   officialWebsiteUrl?: string;
   isMajorFestival?: boolean;
+  /** Resolved origin level when evaluated for a specific destination */
+  scopeLevel?: TourismEventScopeLevel;
+  /** Context name when inherited as district or state-level festival */
+  regionContextName?: string;
 };
 
 export type TourismPlace = {

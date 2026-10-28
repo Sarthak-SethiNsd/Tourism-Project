@@ -104,7 +104,7 @@ import type {
 } from "@/features/tourism/providers/tourism-provider";
 import type { IndianDistrict, IndianRegion } from "@/features/tourism/types/region";
 import { filterTourismPlaces } from "@/features/tourism/utils/place-filters";
-import { curatedTourismEvents } from "@/features/tourism/data/events/tourism-events";
+import { resolveTourismEventsForPlace } from "@/features/tourism/services/event-resolution-service";
 import type {
   TourismCategory,
   TourismEvent,
@@ -876,82 +876,21 @@ export async function getNearbyTransitHubs(
 }
 
 /**
- * Returns prioritized cultural events and festivals for a destination.
- *
- * Matching rules:
+ * Resolves cultural events and festivals for a destination following a deterministic,
+ * three-tier geographic resolution hierarchy:
  * 1. Tier 1: Direct place match (event.placeIds includes place.id).
  * 2. Tier 2: District/city match (event.districtId === place.districtId).
- * 3. Tier 3: State-level major cultural festival fallback if Tiers 1 and 2 yield no events.
+ * 3. Tier 3: State-level major cultural festival fallback when fewer than 2 relevant
+ *    destination/district events are available (max 2 state fallbacks).
  *
  * Events are deduplicated, deterministically sorted, and capped at 4 items.
  */
-export async function getTourismEventsForPlace(place: TourismPlace): Promise<TourismEvent[]> {
-  const directEvents: TourismEvent[] = [];
-  const districtEvents: TourismEvent[] = [];
-  const stateFallbackEvents: TourismEvent[] = [];
-  const seenIds = new Set<string>();
-
-  for (const event of curatedTourismEvents) {
-    // 1. Direct place match
-    if (event.placeIds && event.placeIds.includes(place.id)) {
-      if (!seenIds.has(event.id)) {
-        seenIds.add(event.id);
-        directEvents.push(event);
-      }
-      continue;
-    }
-
-    // 2. District match
-    if (place.districtId && event.districtId === place.districtId) {
-      if (!seenIds.has(event.id)) {
-        seenIds.add(event.id);
-        districtEvents.push(event);
-      }
-      continue;
-    }
-
-    // 3. State-level major fallback candidate
-    if (place.stateId && event.stateId === place.stateId && event.isMajorFestival) {
-      if (!seenIds.has(event.id)) {
-        seenIds.add(event.id);
-        stateFallbackEvents.push(event);
-      }
-    }
-  }
-
-  // Combine results with strict prioritization
-  let results = [...directEvents, ...districtEvents];
-
-  // If no direct or district events were found, include state-level major festivals
-  if (results.length === 0) {
-    results = stateFallbackEvents.slice(0, 2);
-  }
-
-  // Deterministic sort: direct place events first, then major festivals, then daily -> annual -> seasonal, then name
-  const recurrenceWeight: Record<TourismEvent["recurrence"], number> = {
-    daily: 1,
-    annual: 2,
-    seasonal: 3,
-    date_specific: 4,
-  };
-
-  results.sort((a, b) => {
-    const aIsDirect = a.placeIds?.includes(place.id) ? 1 : 0;
-    const bIsDirect = b.placeIds?.includes(place.id) ? 1 : 0;
-    if (aIsDirect !== bIsDirect) return bIsDirect - aIsDirect;
-
-    const aMajor = a.isMajorFestival ? 1 : 0;
-    const bMajor = b.isMajorFestival ? 1 : 0;
-    if (aMajor !== bMajor) return bMajor - aMajor;
-
-    const aWeight = recurrenceWeight[a.recurrence] ?? 5;
-    const bWeight = recurrenceWeight[b.recurrence] ?? 5;
-    if (aWeight !== bWeight) return aWeight - bWeight;
-
-    return a.name.localeCompare(b.name);
-  });
-
-  return results.slice(0, 4);
+export async function getTourismEventsForPlace(
+  place: TourismPlace,
+  district?: IndianDistrict,
+  region?: IndianRegion | null,
+): Promise<TourismEvent[]> {
+  return resolveTourismEventsForPlace(place, district, region);
 }
 
 export async function getCurrentTourismWeather(latitude: number, longitude: number): Promise<CurrentWeather | null> {
@@ -1023,6 +962,7 @@ export async function getDistanceMatrix(requests: TourismRouteRequest[]): Promis
 }
 
 export { resolvePlaceTransitGuidance } from "@/features/tourism/services/transit-guidance-resolver";
+export { resolveTourismEventsForPlace } from "@/features/tourism/services/event-resolution-service";
 export { filterTourismPlaces };
 
 export function createTourismService(provider: TourismProvider) {

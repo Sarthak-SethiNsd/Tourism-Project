@@ -18,6 +18,7 @@ export type {
   TourismEventCategory,
   TourismEventEdition,
   TourismEventRecurrence,
+  TourismEventScopeLevel,
 } from "@/types/tourism";
 export type { IndianDistrict, IndianRegion, ExploreScope, LocationSelection, RegionType } from "@/features/tourism/types/region";
 export type {

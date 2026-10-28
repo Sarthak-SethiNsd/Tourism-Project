@@ -84,7 +84,7 @@ export async function PlaceDetailsPage({ place, categories, region, district }: 
           airports: [],
         }))
       : Promise.resolve({ railwayStations: [], busStations: [], airports: [] }),
-    getTourismEventsForPlace(place),
+    getTourismEventsForPlace(place, district, region),
   ]);
   const travelInfo =
     hasCoordinates && nearbyAttractions[0]

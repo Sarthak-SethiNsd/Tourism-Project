@@ -292,4 +292,172 @@ export const curatedTourismEvents: TourismEvent[] = [
     officialWebsiteUrl: "https://maduraimeenakshi.org",
     isMajorFestival: true,
   },
+  {
+    id: "ganesh-chaturthi-mumbai",
+    name: "Ganesh Chaturthi & Visarjan",
+    category: "spiritual",
+    recurrence: "annual",
+    periodDescription: "Bhadrapada month (August / September, 10-day celebration ending on Anant Chaturdashi)",
+    placeIds: ["gateway-of-india"],
+    districtId: "maharashtra-mumbai-city",
+    stateId: "maharashtra",
+    venue: "City-wide pandals across Mumbai with major immersion processions at Girgaon Chowpatty and South Mumbai waterfront",
+    summary:
+      "Mumbai's most iconic community festival honoring Lord Ganesha, culminating in massive celebratory street processions with drums, dancing, and water immersion (Visarjan) along the Arabian Sea.",
+    culturalSignificance:
+      "Revitalized by Bal Gangadhar Tilak in 1893 as a grand public festival to foster unity, communal solidarity, and national consciousness against British colonial rule.",
+    tips: [
+      "Anant Chaturdashi (10th day) features the grandest immersion processions through South and Central Mumbai.",
+      "Traffic is extensively regulated; local suburban trains and metro lines provide the most reliable transit on immersion days.",
+    ],
+    officialWebsiteUrl: "https://maharashtratourism.gov.in",
+    isMajorFestival: true,
+  },
+  {
+    id: "kala-ghoda-arts-festival",
+    name: "Kala Ghoda Arts Festival",
+    category: "music_arts",
+    recurrence: "annual",
+    periodDescription: "First Saturday of February (traditionally 9 days, early February)",
+    placeIds: ["gateway-of-india"],
+    districtId: "maharashtra-mumbai-city",
+    stateId: "maharashtra",
+    venue: "Kala Ghoda Arts District, Fort, South Mumbai (~600 m from Gateway of India)",
+    summary:
+      "India's largest multicultural street art festival, transforming South Mumbai's heritage quarter into an open-air pedestrian gallery of visual arts, dance, theater, cinema, literature, and architectural walks.",
+    culturalSignificance:
+      "Initiated in 1999 to preserve and revitalize the historic Indo-Saracenic and Victorian Gothic heritage buildings of the Kala Ghoda sub-precinct through public arts.",
+    tips: [
+      "All events, exhibitions, and workshops are free and open to the public without ticket charges.",
+      "Combine an afternoon heritage walk from Gateway of India through Colaba and Kala Ghoda.",
+    ],
+    officialWebsiteUrl: "https://kalaghodaassociation.com",
+    isMajorFestival: false,
+  },
+  {
+    id: "ellora-ajanta-festival",
+    name: "Ellora-Ajanta International Music & Dance Festival",
+    category: "music_arts",
+    recurrence: "annual",
+    periodDescription: "January / February (annual multi-day cultural festival organized by MTDC)",
+    placeIds: ["ajanta-caves"],
+    districtId: "maharashtra-aurangabad",
+    stateId: "maharashtra",
+    venue: "Soneri Mahal campus / Ellora & Ajanta precincts, Chhatrapati Sambhajinagar",
+    summary:
+      "A premier classical cultural gathering bringing India's foremost vocalists, instrumentalists, and classical dancers to perform against the historic backdrop of ancient cave art and heritage architecture.",
+    culturalSignificance:
+      "Organized by Maharashtra Tourism Development Corporation (MTDC) to celebrate the artistic and sculptural genius of the UNESCO World Heritage Ajanta and Ellora Caves.",
+    tips: [
+      "Evenings feature open-air classical recitals under illuminated heritage monuments.",
+      "MTDC operates dedicated festival shuttle buses from central Aurangabad transit hubs.",
+    ],
+    officialWebsiteUrl: "https://maharashtratourism.gov.in",
+    isMajorFestival: true,
+  },
+  {
+    id: "republic-day-kartavya-path",
+    name: "Republic Day Parade & Beating Retreat",
+    category: "heritage",
+    recurrence: "annual",
+    periodDescription: "January 26 to 29 annually (Parade on January 26, Beating Retreat at Vijay Chowk on January 29)",
+    placeIds: ["india-gate-delhi"],
+    districtId: "delhi-new-delhi",
+    stateId: "delhi",
+    venue: "Kartavya Path directly past India Gate to National War Memorial, New Delhi",
+    summary:
+      "India's paramount national ceremonial parade showcasing military regiments, cultural tableaux from each state, folk performances, and an Indian Air Force flypast moving down Kartavya Path past India Gate.",
+    culturalSignificance:
+      "Commemorates the adoption of the Constitution of India on January 26, 1950, expressing national unity, sovereign democracy, and India's immense cultural diversity.",
+    tips: [
+      "Public access requires reserved tickets or invitation passes issued via the official Aamantran government portal.",
+      "Metro stations along Central Secretariat and Kartavya Path have regulated timings on January 26.",
+    ],
+    officialWebsiteUrl: "https://delhitourism.gov.in",
+    isMajorFestival: true,
+  },
+  {
+    id: "nanda-devi-mahotsav-nainital",
+    name: "Nanda Devi Mahotsav & Fair",
+    category: "spiritual",
+    recurrence: "annual",
+    periodDescription: "Bhadrapada Shukla Ashtami (September, lasting 5 to 7 days)",
+    placeIds: ["naini-lake"],
+    districtId: "uttarakhand-nainital",
+    stateId: "uttarakhand",
+    venue: "Naina Devi Temple grounds on northern shore of Naini Lake and Flatts ground, Nainital",
+    summary:
+      "A historic Kumaoni hill festival honoring Goddess Nanda Devi and Sunanda Devi, featuring traditional Chanchari folk dances, devotional processions around Naini Lake, and a bustling handicrafts fair.",
+    culturalSignificance:
+      "Traced back to the Chand dynasty kings of Kumaon in the 16th century, celebrating Goddess Nanda Devi as the celestial protector and family deity of the Central Himalayas.",
+    tips: [
+      "The final day features a sacred idol immersion procession in the waters of Naini Lake.",
+      "The Flatts ground adjoining the lake hosts folk theater, regional Kumaoni food stalls, and woolens.",
+    ],
+    officialWebsiteUrl: "https://uttarakhandtourism.gov.in",
+    isMajorFestival: true,
+  },
+  {
+    id: "international-yoga-festival-rishikesh",
+    name: "International Yoga Festival",
+    category: "spiritual",
+    recurrence: "annual",
+    periodDescription: "First week of March every year (March 1–7)",
+    placeIds: ["rishikesh-ghats"],
+    districtId: "uttarakhand-dehradun",
+    stateId: "uttarakhand",
+    venue: "Parmarth Niketan Ashram and Ganga riverfront ghats, Rishikesh",
+    summary:
+      "A world-renowned annual gathering of spiritual masters, yogis, and seekers from over 80 nations participating in traditional pranayama, asana sessions, Vedic chanting, and discourse on the banks of the sacred Ganga.",
+    culturalSignificance:
+      "Anchored in the ancient yogic heritage of Rishikesh, celebrated globally as the 'Yoga Capital of the World' nestled in the Himalayan foothills.",
+    tips: [
+      "Registration is managed through the Uttarakhand Tourism Development Board and Parmarth Niketan.",
+      "Early morning meditation sessions begin at sunrise overlooking the river ghats.",
+    ],
+    officialWebsiteUrl: "https://internationalyogafestival.com",
+    isMajorFestival: true,
+  },
+  {
+    id: "ganga-aarti-triveni-ghat",
+    name: "Maha Aarti at Triveni Ghat",
+    category: "spiritual",
+    recurrence: "daily",
+    periodDescription: "Daily at sunset (around 6:00 PM winter / 7:00 PM summer)",
+    placeIds: ["rishikesh-ghats"],
+    districtId: "uttarakhand-dehradun",
+    stateId: "uttarakhand",
+    venue: "Triveni Ghat steps, Rishikesh",
+    summary:
+      "A moving daily evening riverfront prayer featuring rhythmic bhajan chants, ringing temple bells, and the waving of tiered brass fire lamps by priests at the holy confluence of Ganga, Yamuna, and Saraswati.",
+    culturalSignificance:
+      "One of the most sacred pilgrimage traditions in the Garhwal Himalayas, where devotees release floating leaf cups with flowers and oil lamps (diyas) downstream into the river.",
+    tips: [
+      "Arrive at least 30 minutes before twilight to find comfortable step seating near the central aarti platform.",
+      "Footwear must be deposited at the complimentary shoe stalls before descending to the ghat.",
+    ],
+    officialWebsiteUrl: "https://uttarakhandtourism.gov.in",
+    isMajorFestival: false,
+  },
+  {
+    id: "margazhi-season-chennai",
+    name: "Chennai Margazhi Music & Dance Season",
+    category: "music_arts",
+    recurrence: "annual",
+    periodDescription: "Mid-December to mid-January (Tamil Margazhi month, lasting 5 to 6 weeks)",
+    placeIds: ["marina-beach"],
+    districtId: "tamil-nadu-chennai",
+    stateId: "tamil-nadu",
+    venue: "Sabhas and cultural auditoriums throughout Chennai (Music Academy, Narada Gana Sabha, Kalakshetra) and coastal heritage zones",
+    summary:
+      "The world's largest classical cultural festival, featuring over 2,000 live performances of Carnatic classical vocal, veena, mridangam concerts, Bharatanatyam recitals, and temple lectures.",
+    culturalSignificance:
+      "Initiated in 1927 to commemorate the founding of the Madras Music Academy, honoring the sacred month of Margazhi as described in Andal's ancient Tiruppavai hymns.",
+    tips: [
+      "Morning concerts and lecture-demonstrations (lec-dems) are frequently free or open entry.",
+      "The authentic 'Sabha canteens' serving freshly prepared filter coffee and South Indian delicacies are a beloved cultural hallmark.",
+    ],
+    officialWebsiteUrl: "https://tamilnadutourism.tn.gov.in",
+    isMajorFestival: true,
+  },
 ];
